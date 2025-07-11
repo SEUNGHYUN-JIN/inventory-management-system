@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>입고요청서 관리시스템</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Malgun Gothic', Arial, sans-serif;
+            line-height: 1.4;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 20px 30px;
+            border-bottom: 4px solid #3498db;
+        }
+        
+        .header h1 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .form-section {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .form-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+            padding-left: 12px;
+        }
+        
+        .controls {
+            background-color: #f8f9fa;
+            padding: 15px 30px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background-color: #495057;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn:hover {
+            background-color: #343a40;
+            transform: translateY(-1px);
+        }
+        
+        .btn-primary {
+            background-color: #2980b9;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e6091;
+        }
+        
+        .btn-success {
+            background-color: #27ae60;
+        }
+        
+        .btn-success:hover {
+            background-color: #1e8449;
+        }
+        
+        .btn-info {
+            background-color: #17a2b8;
+        }
+        
+        .btn-info:hover {
+            background-color: #117a8b;
+        }
+        
+        .btn-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #d68910;
+        }
+        
+        .btn-danger {
+            background-color: #e74c3c;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #495057;
+            font-size: 13px;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 3px;
+            font-size: 13px;
+            background-color: white;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+        }
+        
+        .row {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .col {
+            flex: 1;
+        }
+        
+        .sheet-tabs {
+            background-color: #f8f9fa;
+            display: flex;
+            border-bottom: 1px solid #dee2e6;
+            padding: 0 30px;
+        }
+        
+        .sheet-tab {
+            padding: 12px 20px;
+            background-color: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 13px;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+        
+        .sheet-tab.active {
+            color: #2980b9;
+            border-bottom-color: #2980b9;
+            background-color: white;
+        }
+        
+        .sheet-tab:hover:not(.active) {
+            color: #2980b9;
+            background-color: #e9ecef;
+        }
+        
+        .sheet-content {
+            display: none;
+            padding: 30px;
+        }
+        
+        .sheet-content.active {
+            display: block;
+        }
+        
+        .summary-card {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-left: 4px solid #3498db;
+            margin-bottom: 25px;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .summary-card h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .summary-card p {
+            font-size: 13px;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        
+        .editable-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .editable-table th {
+            background-color: #f1f3f4;
+            color: #495057;
+            font-weight: 600;
+            padding: 12px 8px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+            font-size: 12px;
+        }
+        
+        .editable-table td {
+            padding: 10px 8px;
+            border: 1px solid #dee2e6;
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        .editable-table td:nth-child(2),
+        .editable-table td:nth-child(3) {
+            text-align: left;
+            padding-left: 12px;
+        }
+        
+        .editable-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .editable-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 4px 6px;
+            text-align: center;
+            font-size: 12px;
+            border-radius: 2px;
+        }
+        
+        .editable-input:focus {
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            outline: none;
+        }
+        
+        .calculated-cell {
+            background-color: #e8f4f8;
+            font-weight: 500;
+        }
+        
+        .negative-value {
+            background-color: #fde8e8;
+            color: #c53030;
+            font-weight: 600;
+        }
+        
+        .group-header {
+            background-color: #e3f2fd !important;
+            font-weight: 600 !important;
+            color: #1565c0 !important;
+        }
+        
+        .status {
+            margin: 15px 30px;
+            padding: 12px 16px;
+            border-radius: 4px;
+            display: none;
+            font-size: 13px;
+        }
+        
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .history-filters {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .history-filters label {
+            font-weight: 500;
+            color: #495057;
+            font-size: 13px;
+        }
+        
+        .history-filters input {
+            padding: 6px 10px;
+            border: 1px solid #ced4da;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        
+        .print-header, .print-info, .print-footer {
+            display: none;
+        }
+        
+        @media print {
+            body {
+                background-color: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            
+            .container {
+                box-shadow: none !important;
+                padding: 10px !important;
+                margin: 0 !important;
+                max-width: none !important;
+            }
+            
+            .header, .form-section, .controls, .sheet-tabs, .status, .summary-card, .history-filters {
+                display: none !important;
+            }
+            
+            .sheet-content {
+                display: block !important;
+                border: none !important;
+                padding: 0 !important;
+            }
+            
+            .sheet-content:not(.print-target) {
+                display: none !important;
+            }
+            
+            .print-header {
+                display: block !important;
+                text-align: center;
+                margin-bottom: 20px;
+                font-size: 18px;
+                font-weight: bold;
+                color: #000;
+            }
+            
+            .print-info {
+                display: block !important;
+                margin-bottom: 15px;
+                font-size: 12px;
+                color: #000;
+            }
+            
+            .print-footer {
+                display: block !important;
+                text-align: right;
+                margin-top: 30px;
+                font-size: 12px;
+                color: #000;
+            }
+            
+            .editable-table {
+                font-size: 10px !important;
+            }
+            
+            .editable-table th, .editable-table td {
+                padding: 4px !important;
+                border: 1px solid #000 !important;
+            }
+            
+            .btn {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>입고요청서 관리시스템</h1>
+            <p>Inventory Request Management System v2.01</p>
+            <p style="font-size: 12px; opacity: 0.8; margin-top: 5px;">작성일: <span id="current-date"></span></p>
+        </div>
+        
+        <div class="form-section">
+            <h3>기본 정보 설정</h3>
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="targetFacility">대상 생산시설</label>
+                        <select id="targetFacility" onchange="filterByFacility()">
+                            <option value="">전체 시설</option>
+                            <option value="동원직업재활원">동원직업재활원</option>
+                            <option value="학산보호작업장">학산보호작업장</option>
+                            <option value="누리봄">누리봄</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="facilityName">요청 기관명</label>
+                        <input type="text" id="facilityName" value="경상남도 장애인생산품판매시설">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="requestDate">입고요청일</label>
+                        <input type="date" id="requestDate">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" onclick="addRequestHistory()">입고 요청 등록</button>
+            <button class="btn btn-info" onclick="printCurrentSheet()">현재 시트 인쇄</button>
+            <button class="btn btn-info" onclick="printRequestForm()">입고요청서 인쇄</button>
+            <button class="btn btn-info" onclick="previewPrint()">인쇄 미리보기</button>
+            <button class="btn btn-success" onclick="exportToExcel()">엑셀로 내보내기</button>
+            <button class="btn btn-warning" onclick="clearAllData()">데이터 초기화</button>
+            <button class="btn btn-danger" onclick="resetToDefault()">기본값 리셋</button>
+        </div>
+        
+        <div id="status" class="status"></div>
+        
+        <div class="sheet-tabs">
+            <div class="sheet-tab active" onclick="showSheet('보관품')">보관품 현황</div>
+            <div class="sheet-tab" onclick="showSheet('입고요청서')">입고요청서</div>
+            <div class="sheet-tab" onclick="showSheet('입고이력')">입고이력</div>
+        </div>
+        
+        <!-- 보관품 시트 -->
+        <div id="sheet-보관품" class="sheet-content active">
+            <div class="print-header">보관품 현황표</div>
+            <div class="print-info">
+                <div>작성일: <span id="print-date-inventory"></span></div>
+                <div>작성기관: <span id="print-org-inventory"></span></div>
+            </div>
+            
+            <div class="summary-card">
+                <h4>보관품 현황</h4>
+                <p>현재 보관 중인 품목들의 기본 정보입니다.</p>
+            </div>
+            
+            <table class="editable-table">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">생산시설</th>
+                        <th style="width: 30%;">품목</th>
+                        <th style="width: 25%;">규격</th>
+                        <th style="width: 10%;">수량</th>
+                        <th style="width: 10%;">단위</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-tbody">
+                </tbody>
+            </table>
+            
+            <div class="print-footer">
+                <div>담당자: _______________</div>
+            </div>
+        </div>
+        
+        <!-- 입고요청서 시트 -->
+        <div id="sheet-입고요청서" class="sheet-content">
+            <div class="print-header">입고요청서</div>
+            <div class="print-info">
+                <div>생산시설: <span id="print-facility-request"></span></div>
+                <div>입고요청일: <span id="print-date-request"></span></div>
+                <div>요청기관: <span id="print-org-request"></span></div>
+            </div>
+            
+            <div class="summary-card">
+                <h4>입고요청서 작성</h4>
+                <p><strong>잔량 = 초기수량 - 입고수량</strong> | 입고수량을 입력하면 잔량이 자동 계산됩니다.</p>
+                <p id="facilityFilter">현재 표시: <strong>전체 생산시설</strong></p>
+            </div>
+            
+            <table class="editable-table">
+                <thead>
+                    <tr>
+                        <th style="width: 6%;">No</th>
+                        <th style="width: 16%;">생산시설</th>
+                        <th style="width: 18%;">품목</th>
+                        <th style="width: 16%;">규격</th>
+                        <th style="width: 10%;">초기수량</th>
+                        <th style="width: 11%;">입고수량</th>
+                        <th style="width: 11%;">잔량</th>
+                        <th style="width: 12%;">작성일시</th>
+                    </tr>
+                </thead>
+                <tbody id="request-tbody">
+                </tbody>
+            </table>
+            
+            <div class="print-footer">
+                <div>담당자: _______________</div>
+            </div>
+        </div>
+        
+        <!-- 입고이력 시트 -->
+        <div id="sheet-입고이력" class="sheet-content">
+            <div class="print-header">입고이력 관리대장</div>
+            <div class="print-info">
+                <div>출력일: <span id="print-date-history"></span></div>
+                <div>관리기관: <span id="print-org-history"></span></div>
+            </div>
+            
+            <div class="summary-card">
+                <h4>입고이력 관리</h4>
+                <p>등록된 입고 요청들의 전체 이력을 확인할 수 있습니다.</p>
+            </div>
+            
+            <div class="history-filters">
+                <label>기간 필터:</label>
+                <input type="date" id="filterStartDate">
+                <span>~</span>
+                <input type="date" id="filterEndDate">
+                <button class="btn" onclick="filterHistory()">필터 적용</button>
+                <button class="btn btn-warning" onclick="clearFilter()">필터 해제</button>
+            </div>
+            
+            <table class="editable-table">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">No</th>
+                        <th style="width: 10%;">입고일</th>
+                        <th style="width: 13%;">생산시설</th>
+                        <th style="width: 13%;">요청기관</th>
+                        <th style="width: 16%;">품목</th>
+                        <th style="width: 8%;">입고수량</th>
+                        <th style="width: 8%;">초기수량</th>
+                        <th style="width: 8%;">잔량</th>
+                        <th style="width: 11%;">등록일시</th>
+                        <th style="width: 8%;">작업</th>
+                    </tr>
+                </thead>
+                <tbody id="history-tbody">
+                </tbody>
+            </table>
+            
+            <div class="print-footer">
+                <div>담당자: _______________</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        // 기본 보관품 데이터
+        let inventoryData = [
+            {
+                품목: "점보롤화장지/천연펄프(동원)",
+                규격: "250M*2겹*16롤",
+                수량: 100,
+                단위: "박스",
+                생산시설: "동원직업재활원"
+            },
+            {
+                품목: "롤화장지(동원)", 
+                규격: "3겹/35m*30롤",
+                수량: 300,
+                단위: "팩",
+                생산시설: "동원직업재활원"
+            },
+            {
+                품목: "사각티슈 250매(동원)",
+                규격: "1박스(24개입)",
+                수량: 300,
+                단위: "박스",
+                생산시설: "동원직업재활원"
+            },
+            {
+                품목: "생분해물티슈",
+                규격: "10개입/캡형",
+                수량: 240,
+                단위: "박스",
+                생산시설: "학산보호작업장"
+            },
+            {
+                품목: "프리미엄",
+                규격: "10개입",
+                수량: 600,
+                단위: "박스",
+                생산시설: "학산보호작업장"
+            },
+            {
+                품목: "종이컵",
+                규격: "6.5온스",
+                수량: 320,
+                단위: "박스",
+                생산시설: "누리봄"
+            }
+        ];
+
+        // 이력 데이터 및 설정
+        let historyData = JSON.parse(localStorage.getItem('requestHistory') || '[]');
+        let historyCounter = parseInt(localStorage.getItem('historyCounter') || '1');
+        let currentFacilityFilter = '';
+        
+        // 저장된 보관품 데이터가 있으면 불러오기
+        const savedInventoryData = localStorage.getItem('inventoryData');
+        if (savedInventoryData) {
+            inventoryData = JSON.parse(savedInventoryData);
+        }
+
+        // 전역 변수 - 마지막 등록된 요청서 데이터 저장
+        let lastRegisteredRequest = null;
+
+        // 현재 날짜시간 가져오기 함수
+        function getCurrentDateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
+        }
+        function getCurrentDateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
+        }
+        // 현재 날짜 설정
+        function setCurrentDate() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            
+            // 입고요청일 필드 설정
+            document.getElementById('requestDate').value = `${year}-${month}-${day}`;
+            
+            // 헤더에 현재 날짜 표시
+            const koreanDate = `${year}년 ${month}월 ${day}일`;
+            document.getElementById('current-date').textContent = koreanDate;
+        }
+
+        // 상태 메시지 표시
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // 시트 탭 전환
+        function showSheet(sheetName) {
+            document.querySelectorAll('.sheet-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.sheet-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`sheet-${sheetName}`).classList.add('active');
+        }
+
+        // 생산시설별 필터링
+        function filterByFacility() {
+            currentFacilityFilter = document.getElementById('targetFacility').value;
+            renderRequestTable();
+            updateFacilityFilterDisplay();
+        }
+
+        // 필터 표시 업데이트
+        function updateFacilityFilterDisplay() {
+            const filterDisplay = document.getElementById('facilityFilter');
+            if (currentFacilityFilter) {
+                filterDisplay.innerHTML = `현재 표시: <strong>${currentFacilityFilter}</strong>`;
+            } else {
+                filterDisplay.innerHTML = `현재 표시: <strong>전체 생산시설</strong>`;
+            }
+        }
+
+        // 보관품 테이블 렌더링
+        function renderInventoryTable() {
+            const tbody = document.getElementById('inventory-tbody');
+            tbody.innerHTML = '';
+            
+            const groupedData = inventoryData.reduce((groups, item) => {
+                const facility = item.생산시설;
+                if (!groups[facility]) {
+                    groups[facility] = [];
+                }
+                groups[facility].push(item);
+                return groups;
+            }, {});
+
+            Object.keys(groupedData).sort().forEach(facility => {
+                const headerRow = document.createElement('tr');
+                headerRow.classList.add('group-header');
+                headerRow.innerHTML = `
+                    <td colspan="5" style="text-align: center; padding: 10px;">${facility}</td>
+                `;
+                tbody.appendChild(headerRow);
+
+                groupedData[facility].forEach((item, index) => {
+                    const globalIndex = inventoryData.indexOf(item);
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.생산시설}</td>
+                        <td>${item.품목}</td>
+                        <td>${item.규격}</td>
+                        <td>
+                            <input type="number" class="editable-input" value="${item.수량}" 
+                                   onchange="updateInventoryQuantity(${globalIndex}, this.value)" style="text-align: center;">
+                        </td>
+                        <td>${item.단위}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            });
+        }
+
+        // 입고요청서 테이블 렌더링
+        function renderRequestTable() {
+            const tbody = document.getElementById('request-tbody');
+            tbody.innerHTML = '';
+            
+            const filteredData = currentFacilityFilter 
+                ? inventoryData.filter(item => item.생산시설 === currentFacilityFilter)
+                : inventoryData;
+
+            if (filteredData.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="7" style="text-align: center; color: #666;">선택된 생산시설에 품목이 없습니다.</td>';
+                tbody.appendChild(row);
+                return;
+            }
+
+            if (!currentFacilityFilter) {
+                const groupedData = filteredData.reduce((groups, item) => {
+                    const facility = item.생산시설;
+                    if (!groups[facility]) {
+                        groups[facility] = [];
+                    }
+                    groups[facility].push(item);
+                    return groups;
+                }, {});
+
+                let rowCounter = 1;
+                Object.keys(groupedData).sort().forEach(facility => {
+                    const headerRow = document.createElement('tr');
+                    headerRow.classList.add('group-header');
+                    headerRow.innerHTML = `
+                        <td colspan="7" style="text-align: center; padding: 8px;">${facility}</td>
+                    `;
+                    tbody.appendChild(headerRow);
+
+                    groupedData[facility].forEach((item) => {
+                        const globalIndex = inventoryData.indexOf(item);
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${rowCounter++}</td>
+                            <td>${item.생산시설}</td>
+                            <td>${item.품목}</td>
+                            <td>${item.규격}</td>
+                            <td class="calculated-cell">${item.수량.toLocaleString()}</td>
+                            <td>
+                                <input type="number" class="editable-input" placeholder="0" 
+                                       id="request-${globalIndex}" onchange="calculateRemaining(${globalIndex})" style="text-align: center;">
+                            </td>
+                            <td id="remaining-${globalIndex}" class="calculated-cell">-</td>
+                            <td style="font-size: 10px; color: #666;">${getCurrentDateTime()}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                });
+            } else {
+                filteredData.forEach((item, index) => {
+                    const globalIndex = inventoryData.indexOf(item);
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${item.생산시설}</td>
+                        <td>${item.품목}</td>
+                        <td>${item.규격}</td>
+                        <td class="calculated-cell">${item.수량.toLocaleString()}</td>
+                        <td>
+                            <input type="number" class="editable-input" placeholder="0" 
+                                   id="request-${globalIndex}" onchange="calculateRemaining(${globalIndex})" style="text-align: center;">
+                        </td>
+                        <td id="remaining-${globalIndex}" class="calculated-cell">-</td>
+                        <td style="font-size: 10px; color: #666;">${getCurrentDateTime()}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+
+        // 입고이력 테이블 렌더링
+        function renderHistoryTable(dataToRender = null) {
+            const tbody = document.getElementById('history-tbody');
+            tbody.innerHTML = '';
+            
+            const data = dataToRender || historyData;
+            
+            data.forEach((item, index) => {
+                const row = document.createElement('tr');
+                const remainingClass = item.잔량 < 0 ? 'negative-value' : '';
+                
+                row.innerHTML = `
+                    <td>${item.No}</td>
+                    <td>${item.입고일}</td>
+                    <td>${item.생산시설}</td>
+                    <td>${item.요청기관 || '-'}</td>
+                    <td>${item.품목}</td>
+                    <td>${item.입고수량.toLocaleString()}</td>
+                    <td>${item.초기수량.toLocaleString()}</td>
+                    <td class="${remainingClass}">${item.잔량.toLocaleString()}</td>
+                    <td style="font-size: 10px; color: #666;">${item.등록일시 || '-'}</td>
+                    <td>
+                        <button class="btn btn-danger" onclick="deleteHistory(${item.No})" style="padding: 4px 8px; font-size: 10px;">삭제</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            if (data.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="10" style="text-align: center; color: #666;">등록된 입고 이력이 없습니다.</td>';
+                tbody.appendChild(row);
+            }
+        }
+
+        // 보관품 수량 업데이트 (수동 수정)
+        function updateInventoryQuantity(index, newValue) {
+            const oldValue = inventoryData[index].수량;
+            const newQuantity = parseInt(newValue) || 0;
+            
+            inventoryData[index].수량 = newQuantity;
+            localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+            
+            // 입고요청서의 초기수량도 즉시 업데이트
+            renderRequestTable();
+            
+            const item = inventoryData[index];
+            showStatus(`✅ "${item.품목}" 수량이 ${oldValue} → ${newQuantity}로 업데이트되었습니다.`, 'success');
+            
+            console.log(`📊 수량 직접 수정: ${item.품목} (${oldValue} → ${newQuantity})`);
+        }
+
+        // 잔량 계산 (실시간 계산)
+        function calculateRemaining(index) {
+            const requestInput = document.getElementById(`request-${index}`);
+            const remainingCell = document.getElementById(`remaining-${index}`);
+            
+            if (!requestInput || !remainingCell) return;
+            
+            const requestQuantity = parseInt(requestInput.value) || 0;
+            const currentInventoryQuantity = inventoryData[index].수량; // 현재 보관품 수량 (이미 업데이트된 수량)
+            const remaining = currentInventoryQuantity - requestQuantity;
+            
+            remainingCell.textContent = remaining.toLocaleString();
+            remainingCell.className = remaining < 0 ? 'calculated-cell negative-value' : 'calculated-cell';
+            
+            // 실시간 피드백 (음수일 때 경고)
+            if (remaining < 0) {
+                remainingCell.title = `⚠️ 현재 보유량(${currentInventoryQuantity})보다 ${Math.abs(remaining)}개 부족합니다.`;
+            } else {
+                remainingCell.title = `입고 후 예상 잔량: ${remaining}`;
+            }
+        }
+
+        // 입고 요청 등록
+        function addRequestHistory() {
+            const facilityName = document.getElementById('facilityName').value;
+            const requestDate = document.getElementById('requestDate').value;
+            const targetFacility = document.getElementById('targetFacility').value;
+            
+            if (!facilityName || !requestDate) {
+                showStatus('요청 기관명과 입고요청일을 입력해주세요.', 'error');
+                return;
+            }
+
+            let hasRequests = false;
+            let requestCount = 0;
+            let updatedItems = [];
+            let registeredItems = []; // 등록된 품목들 저장
+            
+            const dataToProcess = targetFacility 
+                ? inventoryData.filter(item => item.생산시설 === targetFacility)
+                : inventoryData;
+
+            dataToProcess.forEach((item) => {
+                const globalIndex = inventoryData.indexOf(item);
+                const requestInput = document.getElementById(`request-${globalIndex}`);
+                const requestQuantity = parseInt(requestInput?.value) || 0;
+                
+                if (requestQuantity > 0) {
+                    hasRequests = true;
+                    requestCount++;
+                    
+                    const previousQuantity = item.수량; // 입고 전 수량
+                    const remaining = item.수량 - requestQuantity; // 입고 후 잔량
+                    
+                    const historyItem = {
+                        No: historyCounter++,
+                        입고일: requestDate,
+                        생산시설: item.생산시설,
+                        요청기관: facilityName,
+                        품목: item.품목,
+                        입고수량: requestQuantity,
+                        초기수량: previousQuantity, // 입고 전 수량 저장
+                        잔량: remaining, // 입고 후 잔량
+                        등록일시: getCurrentDateTime() // 실제 등록한 날짜시간
+                    };
+                    
+                    historyData.push(historyItem);
+                    
+                    // 핵심: 보관품 현황의 수량을 잔량으로 업데이트
+                    inventoryData[globalIndex].수량 = remaining;
+                    
+                    updatedItems.push({
+                        품목: item.품목,
+                        생산시설: item.생산시설,
+                        입고전수량: previousQuantity,
+                        입고수량: requestQuantity,
+                        입고후수량: remaining
+                    });
+
+                    // 등록된 요청서 데이터 저장 (인쇄용)
+                    registeredItems.push({
+                        No: registeredItems.length + 1,
+                        생산시설: item.생산시설,
+                        품목: item.품목,
+                        규격: item.규격,
+                        초기수량: previousQuantity,
+                        입고수량: requestQuantity,
+                        잔량: remaining,
+                        등록일시: getCurrentDateTime()
+                    });
+                    
+                    // UI 초기화
+                    if (requestInput) {
+                        requestInput.value = '';
+                    }
+                    const remainingCell = document.getElementById(`remaining-${globalIndex}`);
+                    if (remainingCell) {
+                        remainingCell.textContent = '-';
+                        remainingCell.className = 'calculated-cell';
+                    }
+                }
+            });
+
+            if (!hasRequests) {
+                showStatus('입고수량을 1개 이상 입력해주세요.', 'error');
+                return;
+            }
+
+            // 마지막 등록된 요청서 데이터 저장
+            lastRegisteredRequest = {
+                facilityName: facilityName,
+                requestDate: requestDate,
+                targetFacility: targetFacility,
+                items: registeredItems
+            };
+
+            // 모든 데이터를 localStorage에 저장
+            localStorage.setItem('requestHistory', JSON.stringify(historyData));
+            localStorage.setItem('historyCounter', historyCounter.toString());
+            localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+            
+            // 모든 테이블을 새로운 데이터로 다시 렌더링
+            renderInventoryTable(); // 보관품 현황 업데이트 (새로운 수량 반영)
+            renderRequestTable();   // 입고요청서 업데이트 (새로운 초기수량 반영)
+            renderHistoryTable();   // 입고이력 업데이트 (새 이력 추가)
+            
+            // 성공 메시지와 업데이트 내역
+            const facilityMsg = targetFacility ? `${targetFacility}의 ` : '';
+            let updateSummary = `\n\n📊 업데이트 내역:\n`;
+            updatedItems.forEach(item => {
+                updateSummary += `• ${item.품목}: ${item.입고전수량} → ${item.입고후수량} (${item.입고수량} 차감)\n`;
+            });
+            
+            showStatus(`${facilityMsg}입고 요청 ${requestCount}건이 등록되었습니다.${updateSummary}`, 'success');
+            
+            console.log('📊 업데이트된 품목들:', updatedItems);
+        }
+
+        // 이력 삭제 (수량 되돌리기 포함)
+        function deleteHistory(no) {
+            const historyItem = historyData.find(item => item.No === no);
+            if (!historyItem) return;
+            
+            if (confirm(`이 이력을 삭제하시겠습니까?\n\n📋 삭제 대상:\n• 품목: ${historyItem.품목}\n• 생산시설: ${historyItem.생산시설}\n• 입고수량: ${historyItem.입고수량}\n\n⚠️ 삭제 시 해당 품목의 수량이 ${historyItem.입고수량}만큼 증가합니다.`)) {
+                
+                // 해당 품목의 수량을 원래대로 되돌리기
+                const inventoryItem = inventoryData.find(item => 
+                    item.품목 === historyItem.품목 && item.생산시설 === historyItem.생산시설
+                );
+                
+                let restoredQuantity = 0;
+                if (inventoryItem) {
+                    const beforeQuantity = inventoryItem.수량;
+                    inventoryItem.수량 += historyItem.입고수량; // 입고수량만큼 다시 더하기
+                    restoredQuantity = inventoryItem.수량;
+                    
+                    console.log(`📊 수량 복원: ${historyItem.품목} (${beforeQuantity} → ${restoredQuantity})`);
+                }
+                
+                // 이력에서 제거
+                historyData = historyData.filter(item => item.No !== no);
+                
+                // 모든 변경사항을 localStorage에 저장
+                localStorage.setItem('requestHistory', JSON.stringify(historyData));
+                localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+                
+                // 모든 테이블 새로고침하여 연동된 데이터 반영
+                renderInventoryTable(); // 보관품 현황 업데이트 (복원된 수량 반영)
+                renderRequestTable();   // 입고요청서 업데이트 (복원된 초기수량 반영)
+                renderHistoryTable();   // 입고이력 업데이트 (삭제된 이력 제거)
+                
+                showStatus(`✅ 이력이 삭제되고 "${historyItem.품목}" 수량이 ${restoredQuantity}로 복원되었습니다.`, 'success');
+            }
+        }
+
+        // 이력 필터링
+        function filterHistory() {
+            const startDate = document.getElementById('filterStartDate').value;
+            const endDate = document.getElementById('filterEndDate').value;
+            
+            if (!startDate || !endDate) {
+                showStatus('시작일과 종료일을 모두 입력해주세요.', 'error');
+                return;
+            }
+
+            const filteredData = historyData.filter(item => {
+                const itemDate = item.입고일;
+                return itemDate >= startDate && itemDate <= endDate;
+            });
+
+            renderHistoryTable(filteredData);
+            showStatus(`${filteredData.length}건의 이력이 필터링되었습니다.`, 'success');
+        }
+
+        // 필터 해제
+        function clearFilter() {
+            document.getElementById('filterStartDate').value = '';
+            document.getElementById('filterEndDate').value = '';
+            renderHistoryTable();
+            showStatus('필터가 해제되었습니다.', 'success');
+        }
+
+        // 현재 시트 인쇄
+        function printCurrentSheet() {
+            const activeSheet = document.querySelector('.sheet-content.active');
+            if (!activeSheet) {
+                showStatus('인쇄할 시트를 선택해주세요.', 'error');
+                return;
+            }
+
+            updatePrintInfo();
+            document.querySelectorAll('.sheet-content').forEach(sheet => {
+                sheet.classList.remove('print-target');
+            });
+            activeSheet.classList.add('print-target');
+            window.print();
+            showStatus('인쇄 다이얼로그가 열렸습니다.', 'success');
+        }
+
+        // 입고요청서 전용 인쇄 (마지막 등록된 내용 기준)
+        function printRequestForm() {
+            // 마지막 등록된 데이터가 있는지 확인
+            if (!lastRegisteredRequest || lastRegisteredRequest.items.length === 0) {
+                showStatus('등록된 입고 요청이 없습니다. 먼저 입고 요청을 등록해주세요.', 'error');
+                return;
+            }
+
+            const requestSheet = document.getElementById('sheet-입고요청서');
+            const originalTable = requestSheet.querySelector('.editable-table tbody');
+            const originalContent = originalTable.innerHTML;
+            
+            // 마지막 등록된 요청서 데이터로 테이블 생성
+            originalTable.innerHTML = '';
+            lastRegisteredRequest.items.forEach(item => {
+                const row = document.createElement('tr');
+                const remainingClass = item.잔량 < 0 ? 'negative-value' : '';
+                row.innerHTML = `
+                    <td>${item.No}</td>
+                    <td>${item.생산시설}</td>
+                    <td>${item.품목}</td>
+                    <td>${item.규격}</td>
+                    <td>${item.초기수량.toLocaleString()}</td>
+                    <td>${item.입고수량.toLocaleString()}</td>
+                    <td class="${remainingClass}">${item.잔량.toLocaleString()}</td>
+                    <td style="font-size: 10px;">${item.등록일시}</td>
+                `;
+                originalTable.appendChild(row);
+            });
+
+            updatePrintInfo();
+            document.querySelectorAll('.sheet-content').forEach(sheet => {
+                sheet.classList.remove('print-target');
+            });
+            requestSheet.classList.add('print-target');
+            window.print();
+
+            setTimeout(() => {
+                originalTable.innerHTML = originalContent;
+                requestSheet.classList.remove('print-target');
+            }, 100);
+
+            showStatus(`마지막 등록된 입고요청서 인쇄 (${lastRegisteredRequest.items.length}개 품목)`, 'success');
+        }
+
+        // 인쇄 미리보기
+        function previewPrint() {
+            if (!lastRegisteredRequest || lastRegisteredRequest.items.length === 0) {
+                showStatus('등록된 입고 요청이 없습니다. 먼저 입고 요청을 등록해주세요.', 'error');
+                return;
+            }
+
+            // 새 창에서 미리보기 열기
+            const previewWindow = window.open('', '_blank', 'width=800,height=600');
+            
+            let previewHtml = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>입고요청서 미리보기</title>
+                    <style>
+                        body { font-family: 'Malgun Gothic', Arial, sans-serif; padding: 20px; }
+                        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+                        .info { margin-bottom: 15px; }
+                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        th, td { border: 1px solid #333; padding: 8px; text-align: center; font-size: 12px; }
+                        th { background-color: #f1f3f4; font-weight: bold; }
+                        .negative-value { background-color: #fde8e8; color: #c53030; }
+                        .footer { text-align: right; margin-top: 30px; }
+                        .btn { padding: 10px 20px; margin: 5px; cursor: pointer; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h2>입고요청서</h2>
+                    </div>
+                    <div class="info">
+                        <div>생산시설: ${lastRegisteredRequest.targetFacility || '전체 생산시설'}</div>
+                        <div>입고요청일: ${lastRegisteredRequest.requestDate}</div>
+                        <div>요청기관: ${lastRegisteredRequest.facilityName}</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>생산시설</th>
+                                <th>품목</th>
+                                <th>규격</th>
+                                <th>초기수량</th>
+                                <th>입고수량</th>
+                                <th>잔량</th>
+                                <th>등록일시</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            lastRegisteredRequest.items.forEach(item => {
+                const remainingClass = item.잔량 < 0 ? 'negative-value' : '';
+                previewHtml += `
+                    <tr>
+                        <td>${item.No}</td>
+                        <td>${item.생산시설}</td>
+                        <td>${item.품목}</td>
+                        <td>${item.규격}</td>
+                        <td>${item.초기수량.toLocaleString()}</td>
+                        <td>${item.입고수량.toLocaleString()}</td>
+                        <td class="${remainingClass}">${item.잔량.toLocaleString()}</td>
+                        <td>${item.등록일시}</td>
+                    </tr>
+                `;
+            });
+
+            previewHtml += `
+                        </tbody>
+                    </table>
+                    <div class="footer">
+                        <div>담당자: _______________</div>
+                    </div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="btn" onclick="window.print()">인쇄하기</button>
+                        <button class="btn" onclick="window.close()">닫기</button>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            previewWindow.document.write(previewHtml);
+            previewWindow.document.close();
+            showStatus('인쇄 미리보기 창이 열렸습니다.', 'success');
+        }
+        // 인쇄용 정보 업데이트
+        function updatePrintInfo() {
+            const currentDate = new Date().toLocaleDateString('ko-KR');
+            const facilityName = document.getElementById('facilityName').value;
+            const requestDate = document.getElementById('requestDate').value;
+            const targetFacility = document.getElementById('targetFacility').value;
+
+            document.getElementById('print-date-inventory').textContent = currentDate;
+            document.getElementById('print-org-inventory').textContent = facilityName;
+            document.getElementById('print-facility-request').textContent = targetFacility || '전체 생산시설';
+            document.getElementById('print-date-request').textContent = requestDate || currentDate;
+            document.getElementById('print-org-request').textContent = facilityName;
+            document.getElementById('print-date-history').textContent = currentDate;
+            document.getElementById('print-org-history').textContent = facilityName;
+        }
+
+        // 엑셀 내보내기
+        function exportToExcel() {
+            try {
+                const wb = XLSX.utils.book_new();
+                
+                const inventoryWS = XLSX.utils.json_to_sheet(inventoryData);
+                XLSX.utils.book_append_sheet(wb, inventoryWS, '보관품');
+                
+                if (historyData.length > 0) {
+                    const historyWS = XLSX.utils.json_to_sheet(historyData);
+                    XLSX.utils.book_append_sheet(wb, historyWS, '입고이력');
+                }
+                
+                const fileName = `입고관리_${new Date().toISOString().split('T')[0]}.xlsx`;
+                XLSX.writeFile(wb, fileName);
+                
+                showStatus('엑셀 파일이 다운로드되었습니다!', 'success');
+                
+            } catch (error) {
+                console.error('엑셀 내보내기 오류:', error);
+                showStatus('엑셀 내보내기 중 오류가 발생했습니다.', 'error');
+            }
+        }
+
+        // 모든 데이터 초기화
+        function clearAllData() {
+            if (confirm('⚠️ 모든 데이터 초기화\n\n다음 작업이 수행됩니다:\n• 모든 입고 이력 삭제\n• 보관품 수량을 기본값으로 리셋\n• 저장된 모든 데이터 삭제\n\n계속하시겠습니까?')) {
+                
+                // 모든 데이터 초기화
+                historyData = [];
+                historyCounter = 1;
+                
+                // localStorage 완전 초기화
+                localStorage.removeItem('requestHistory');
+                localStorage.removeItem('historyCounter');
+                localStorage.removeItem('inventoryData');
+                
+                // 보관품 데이터를 기본값으로 리셋 (확인 없이 강제 실행)
+                inventoryData = getDefaultInventoryData();
+                localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+                
+                // 모든 테이블 새로고침
+                renderInventoryTable();
+                renderRequestTable();
+                renderHistoryTable();
+                
+                showStatus('✅ 모든 데이터가 기본값으로 초기화되었습니다.', 'success');
+                
+                console.log('🔄 시스템 완전 초기화 완료');
+            }
+        }
+
+        // 기본 보관품 데이터 반환 함수
+        function getDefaultInventoryData() {
+            return [
+                {
+                    품목: "점보롤화장지/천연펄프(동원)",
+                    규격: "250M*2겹*16롤",
+                    수량: 100,
+                    단위: "박스",
+                    생산시설: "동원직업재활원"
+                },
+                {
+                    품목: "롤화장지(동원)", 
+                    규격: "3겹/35m*30롤",
+                    수량: 300,
+                    단위: "팩",
+                    생산시설: "동원직업재활원"
+                },
+                {
+                    품목: "사각티슈 250매(동원)",
+                    규격: "1박스(24개입)",
+                    수량: 300,
+                    단위: "박스",
+                    생산시설: "동원직업재활원"
+                },
+                {
+                    품목: "생분해물티슈",
+                    규격: "10개입/캡형",
+                    수량: 240,
+                    단위: "박스",
+                    생산시설: "학산보호작업장"
+                },
+                {
+                    품목: "프리미엄",
+                    규격: "10개입",
+                    수량: 600,
+                    단위: "박스",
+                    생산시설: "학산보호작업장"
+                },
+                {
+                    품목: "종이컵",
+                    규격: "6.5온스",
+                    수량: 320,
+                    단위: "박스",
+                    생산시설: "누리봄"
+                }
+            ];
+        }
+
+        // 기본값으로 리셋 (수정된 버전)
+        function resetToDefault() {
+            if (confirm('⚠️ 보관품 데이터 리셋\n\n보관품 수량을 기본값으로 되돌립니다.\n(입고이력은 유지됩니다)\n\n계속하시겠습니까?')) {
+                
+                // 기본 데이터로 교체
+                inventoryData = getDefaultInventoryData();
+                
+                // localStorage에 저장
+                localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+                
+                // 마지막 등록된 요청서 데이터도 초기화
+                lastRegisteredRequest = null;
+                
+                // 모든 테이블 새로고침하여 연동된 데이터 반영
+                renderInventoryTable(); // 보관품 현황 업데이트 (기본값 반영)
+                renderRequestTable();   // 입고요청서 업데이트 (기본 초기수량 반영)
+                // 입고이력은 그대로 유지
+                
+                showStatus('✅ 보관품 데이터가 기본값으로 리셋되었습니다.', 'success');
+                
+                console.log('🔄 보관품 데이터 기본값 복원 완료');
+            }
+        }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            setCurrentDate();
+            renderInventoryTable();
+            renderRequestTable();
+            renderHistoryTable();
+        });
+    </script>
+</body>
+</html>
