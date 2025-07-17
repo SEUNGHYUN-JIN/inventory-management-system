@@ -67,17 +67,28 @@
             background: #357abd;
         }
         
+        .google-login-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .loading-text {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+        }
+        
         /* 메인 컨테이너 */
         .container {
             max-width: 1400px;
             margin: 0 auto;
             background-color: white;
             min-height: 100vh;
-            display: none; /* 초기에는 숨김 */
+            display: none;
         }
         
         .container.authenticated {
-            display: block; /* 로그인 후 표시 */
+            display: block;
         }
         
         .header {
@@ -206,11 +217,6 @@
             100% { opacity: 1; }
         }
         
-        .sync-info {
-            font-size: 12px;
-            color: #666;
-        }
-        
         .form-section {
             background-color: #ffffff;
             padding: 25px 30px;
@@ -258,46 +264,11 @@
             transform: none;
         }
         
-        .btn-primary {
-            background-color: #2980b9;
-        }
-        
-        .btn-primary:hover {
-            background-color: #1e6091;
-        }
-        
-        .btn-success {
-            background-color: #27ae60;
-        }
-        
-        .btn-success:hover {
-            background-color: #1e8449;
-        }
-        
-        .btn-info {
-            background-color: #17a2b8;
-        }
-        
-        .btn-info:hover {
-            background-color: #117a8b;
-        }
-        
-        .btn-warning {
-            background-color: #f39c12;
-            color: white;
-        }
-        
-        .btn-warning:hover {
-            background-color: #d68910;
-        }
-        
-        .btn-danger {
-            background-color: #e74c3c;
-        }
-        
-        .btn-danger:hover {
-            background-color: #c0392b;
-        }
+        .btn-primary { background-color: #2980b9; }
+        .btn-success { background-color: #27ae60; }
+        .btn-info { background-color: #17a2b8; }
+        .btn-warning { background-color: #f39c12; }
+        .btn-danger { background-color: #e74c3c; }
         
         .form-group {
             margin-bottom: 15px;
@@ -318,12 +289,6 @@
             border-radius: 3px;
             font-size: 13px;
             background-color: white;
-        }
-        
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
         }
         
         .row {
@@ -358,11 +323,6 @@
             color: #2980b9;
             border-bottom-color: #2980b9;
             background-color: white;
-        }
-        
-        .sheet-tab:hover:not(.active) {
-            color: #2980b9;
-            background-color: #e9ecef;
         }
         
         .sheet-content {
@@ -420,49 +380,6 @@
             vertical-align: middle;
         }
         
-        .editable-table td:nth-child(2),
-        .editable-table td:nth-child(3) {
-            text-align: left;
-            padding-left: 12px;
-        }
-        
-        .editable-table tbody tr:hover {
-            background-color: #f8f9fa;
-        }
-        
-        .editable-input {
-            width: 100%;
-            border: none;
-            background: transparent;
-            padding: 4px 6px;
-            text-align: center;
-            font-size: 12px;
-            border-radius: 2px;
-        }
-        
-        .editable-input:focus {
-            background-color: #fff3cd;
-            border: 1px solid #ffc107;
-            outline: none;
-        }
-        
-        .calculated-cell {
-            background-color: #e8f4f8;
-            font-weight: 500;
-        }
-        
-        .negative-value {
-            background-color: #fde8e8;
-            color: #c53030;
-            font-weight: 600;
-        }
-        
-        .group-header {
-            background-color: #e3f2fd !important;
-            font-weight: 600 !important;
-            color: #1565c0 !important;
-        }
-        
         .status {
             margin: 15px 30px;
             padding: 12px 16px;
@@ -483,160 +400,35 @@
             border: 1px solid #f5c6cb;
         }
         
-        .history-filters {
-            margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 4px;
-        }
-        
-        .history-filters label {
-            font-weight: 500;
-            color: #495057;
-            font-size: 13px;
-        }
-        
-        .history-filters input {
-            padding: 6px 10px;
-            border: 1px solid #ced4da;
-            border-radius: 3px;
-            font-size: 12px;
-        }
-        
-        .filter-highlight {
-            background-color: #e3f2fd;
-            color: #1565c0;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-weight: 600;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-            font-size: 14px;
-        }
-        
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #3498db;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            margin: 10px auto;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .print-header, .print-info, .print-footer {
-            display: none;
-        }
-        
-        /* 읽기 전용 모드 스타일 */
-        .readonly .editable-input {
-            background-color: #f8f9fa !important;
-            cursor: not-allowed !important;
-        }
-        
         .readonly .btn-primary,
         .readonly .btn-warning,
         .readonly .btn-danger {
             display: none !important;
         }
-        
-        @media print {
-            body {
-                background-color: white !important;
-                padding: 0 !important;
-                margin: 0 !important;
-            }
-            
-            .container {
-                box-shadow: none !important;
-                padding: 10px !important;
-                margin: 0 !important;
-                max-width: none !important;
-            }
-            
-            .header, .form-section, .controls, .sheet-tabs, .status, .summary-card, .history-filters, .firebase-status {
-                display: none !important;
-            }
-            
-            .sheet-content {
-                display: block !important;
-                border: none !important;
-                padding: 0 !important;
-            }
-            
-            .sheet-content:not(.print-target) {
-                display: none !important;
-            }
-            
-            .print-header {
-                display: block !important;
-                text-align: center;
-                margin-bottom: 20px;
-                font-size: 18px;
-                font-weight: bold;
-                color: #000;
-            }
-            
-            .print-info {
-                display: block !important;
-                margin-bottom: 15px;
-                font-size: 12px;
-                color: #000;
-            }
-            
-            .print-footer {
-                display: block !important;
-                text-align: right;
-                margin-top: 30px;
-                font-size: 12px;
-                color: #000;
-            }
-            
-            .editable-table {
-                font-size: 10px !important;
-            }
-            
-            .editable-table th, .editable-table td {
-                padding: 4px !important;
-                border: 1px solid #000 !important;
-            }
-            
-            .btn {
-                display: none !important;
-            }
-        }
     </style>
 </head>
 <body>
+    <!-- 로딩 및 에러 표시 -->
+    <div id="initStatus" style="position: fixed; top: 10px; right: 10px; background: white; padding: 10px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 1000; display: none;">
+        <div id="initMessage">시스템 초기화 중...</div>
+    </div>
+
     <!-- 로그인 화면 -->
     <div id="loginScreen" class="login-screen">
         <div class="login-card">
             <h2>🔐 입고요청서 관리시스템</h2>
             <p>시스템에 접근하려면 Google 계정으로 로그인하세요</p>
-            <button class="google-login-btn" id="loginBtn">
+            <button class="google-login-btn" id="loginBtn" disabled>
                 <svg width="20" height="20" viewBox="0 0 24 24">
                     <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                     <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                     <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                     <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                 </svg>
-                Google로 로그인
+                <span id="loginBtnText">Firebase 로딩 중...</span>
             </button>
-            <div style="font-size: 12px; color: #666;">
-                🔒 로그인 후 시스템을 사용할 수 있습니다<br>
-                📋 소유자는 편집 가능, 다른 사용자는 열람만 가능
+            <div class="loading-text" id="loadingText">
+                🔄 Firebase SDK를 불러오는 중입니다...
             </div>
         </div>
     </div>
@@ -646,7 +438,7 @@
         <div class="header">
             <div class="header-left">
                 <h1>입고요청서 관리시스템</h1>
-                <p>Inventory Request Management System v4.0 - Auth Edition</p>
+                <p>Inventory Request Management System v4.1 - Fixed Edition</p>
                 <p style="font-size: 12px; opacity: 0.8; margin-top: 5px;">작성일: <span id="current-date"></span></p>
             </div>
             <div class="header-right">
@@ -666,9 +458,6 @@
             <div class="status-indicator">
                 <div id="status-dot" class="status-dot connecting"></div>
                 <span id="status-text">Firebase 연결 중...</span>
-            </div>
-            <div class="sync-info">
-                <span id="sync-info">마지막 동기화: 연결 중</span>
             </div>
         </div>
         
@@ -709,11 +498,8 @@
         <div class="controls">
             <button class="btn btn-primary" id="addRequestBtn">입고 요청 등록</button>
             <button class="btn btn-info" id="printSheetBtn">현재 시트 인쇄</button>
-            <button class="btn btn-info" id="printRequestBtn">입고요청서 인쇄</button>
-            <button class="btn btn-info" id="previewBtn">인쇄 미리보기</button>
             <button class="btn btn-success" id="exportBtn">엑셀로 내보내기</button>
             <button class="btn btn-warning" id="syncBtn">수동 동기화</button>
-            <button class="btn btn-warning" id="clearBtn">데이터 초기화</button>
             <button class="btn btn-danger" id="resetBtn">기본값 리셋</button>
         </div>
         
@@ -727,21 +513,10 @@
         
         <!-- 보관품 시트 -->
         <div id="sheet-보관품" class="sheet-content active">
-            <div class="print-header">보관품 현황표</div>
-            <div class="print-info">
-                <div>작성일: <span id="print-date-inventory"></span></div>
-                <div>작성기관: <span id="print-org-inventory"></span></div>
-            </div>
-            
             <div class="summary-card">
                 <h4>보관품 현황</h4>
-                <p>실시간 동기화되는 보관품 정보입니다. 수정사항이 모든 기기에 즉시 반영됩니다.</p>
+                <p>실시간 동기화되는 보관품 정보입니다.</p>
                 <p id="inventoryFilter">현재 표시: <strong>전체 생산시설</strong></p>
-            </div>
-            
-            <div id="inventory-loading" class="loading" style="display: none;">
-                <div class="spinner"></div>
-                <p>보관품 데이터를 불러오는 중...</p>
             </div>
             
             <table class="editable-table">
@@ -755,26 +530,20 @@
                     </tr>
                 </thead>
                 <tbody id="inventory-tbody">
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 20px; color: #666;">
+                            데이터를 불러오는 중...
+                        </td>
+                    </tr>
                 </tbody>
             </table>
-            
-            <div class="print-footer">
-                <div>담당자: _______________</div>
-            </div>
         </div>
         
         <!-- 입고요청서 시트 -->
         <div id="sheet-입고요청서" class="sheet-content">
-            <div class="print-header">입고요청서</div>
-            <div class="print-info">
-                <div>생산시설: <span id="print-facility-request"></span></div>
-                <div>입고요청일: <span id="print-date-request"></span></div>
-                <div>요청기관: <span id="print-org-request"></span></div>
-            </div>
-            
             <div class="summary-card">
                 <h4>입고요청서 작성</h4>
-                <p><strong>잔량 = 초기수량 - 입고수량</strong> | 모든 변경사항이 실시간으로 동기화됩니다.</p>
+                <p><strong>잔량 = 초기수량 - 입고수량</strong></p>
                 <p id="facilityFilter">현재 표시: <strong>전체 생산시설</strong></p>
             </div>
             
@@ -792,35 +561,21 @@
                     </tr>
                 </thead>
                 <tbody id="request-tbody">
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 20px; color: #666;">
+                            데이터를 불러오는 중...
+                        </td>
+                    </tr>
                 </tbody>
             </table>
-            
-            <div class="print-footer">
-                <div>담당자: _______________</div>
-            </div>
         </div>
         
         <!-- 입고이력 시트 -->
         <div id="sheet-입고이력" class="sheet-content">
-            <div class="print-header">입고이력 관리대장</div>
-            <div class="print-info">
-                <div>출력일: <span id="print-date-history"></span></div>
-                <div>관리기관: <span id="print-org-history"></span></div>
-            </div>
-            
             <div class="summary-card">
                 <h4>입고이력 관리</h4>
                 <p>모든 기기에서 실시간으로 공유되는 입고 이력입니다.</p>
                 <p id="historyFilter">현재 표시: <strong>전체 생산시설</strong></p>
-            </div>
-            
-            <div class="history-filters">
-                <label>기간 필터:</label>
-                <input type="date" id="filterStartDate">
-                <span>~</span>
-                <input type="date" id="filterEndDate">
-                <button class="btn" id="filterBtn">필터 적용</button>
-                <button class="btn btn-warning" id="clearFilterBtn">필터 해제</button>
             </div>
             
             <table class="editable-table">
@@ -839,39 +594,24 @@
                     </tr>
                 </thead>
                 <tbody id="history-tbody">
+                    <tr>
+                        <td colspan="10" style="text-align: center; padding: 20px; color: #666;">
+                            데이터를 불러오는 중...
+                        </td>
+                    </tr>
                 </tbody>
             </table>
-            
-            <div class="print-footer">
-                <div>담당자: _______________</div>
-            </div>
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    
     <script>
-        // ========== Firebase 설정 ==========
-        const firebaseConfig = {
-            apiKey: "AIzaSyDYxnj8yec_fyxggZ4TJ1H2MtcBrrZVYMQ",
-            authDomain: "inventory-management-212d7.firebaseapp.com",
-            projectId: "inventory-management-212d7",
-            storageBucket: "inventory-management-212d7.firebasestorage.app",
-            messagingSenderId: "808033831667",
-            appId: "1:808033831667:web:e5633736dcb054703c4586"
-        };
-        
-        // Firebase 초기화
-        let app, auth, db;
-        let isFirebaseConnected = false;
-        
-        // 전역 변수
+        // ========== 전역 변수 ==========
+        let firebase = null;
+        let auth = null;
+        let db = null;
         let currentUser = null;
         let isOwner = false;
+        let isFirebaseReady = false;
         
         // 🔥 소유자 이메일 (본인 Gmail 주소로 변경하세요!)
         const OWNER_EMAIL = 'jinsha85@gmail.com';
@@ -879,16 +619,100 @@
         // 데이터 변수
         let inventoryData = [];
         let historyData = [];
-        let historyCounter = 1;
-        let currentFacilityFilter = '';
-        let lastRegisteredRequest = null;
+        
+        // ========== 상태 표시 함수 ==========
+        function showInitStatus(message, isError = false) {
+            const statusDiv = document.getElementById('initStatus');
+            const messageDiv = document.getElementById('initMessage');
+            messageDiv.textContent = message;
+            statusDiv.style.display = 'block';
+            statusDiv.style.backgroundColor = isError ? '#f8d7da' : 'white';
+            statusDiv.style.color = isError ? '#721c24' : '#333';
+            
+            if (!isError) {
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 3000);
+            }
+        }
+        
+        function updateLoginButton(text, enabled = false) {
+            const btn = document.getElementById('loginBtn');
+            const btnText = document.getElementById('loginBtnText');
+            const loadingText = document.getElementById('loadingText');
+            
+            btnText.textContent = text;
+            btn.disabled = !enabled;
+            
+            if (enabled) {
+                loadingText.textContent = '✅ 로그인할 준비가 되었습니다';
+                loadingText.style.color = '#28a745';
+            }
+        }
+        
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+        }
         
         // ========== Firebase 초기화 ==========
-        function initializeFirebase() {
+        function loadFirebaseSDKs() {
+            return new Promise((resolve, reject) => {
+                showInitStatus('Firebase SDK 로딩 중...');
+                
+                // Firebase SDK가 이미 로드되었는지 확인
+                if (window.firebase) {
+                    showInitStatus('Firebase SDK 로드 완료');
+                    resolve();
+                    return;
+                }
+                
+                // 타임아웃 설정
+                const timeout = setTimeout(() => {
+                    reject(new Error('Firebase SDK 로딩 타임아웃'));
+                }, 10000);
+                
+                // Firebase SDK가 로드될 때까지 대기
+                const checkFirebase = setInterval(() => {
+                    if (window.firebase) {
+                        clearInterval(checkFirebase);
+                        clearTimeout(timeout);
+                        showInitStatus('Firebase SDK 로드 완료');
+                        resolve();
+                    }
+                }, 100);
+            });
+        }
+        
+        async function initializeFirebase() {
             try {
-                app = firebase.initializeApp(firebaseConfig);
+                showInitStatus('Firebase 초기화 중...');
+                
+                // Firebase 설정
+                const firebaseConfig = {
+                    apiKey: "AIzaSyDYxnj8yec_fyxggZ4TJ1H2MtcBrrZVYMQ",
+                    authDomain: "inventory-management-212d7.firebaseapp.com",
+                    projectId: "inventory-management-212d7",
+                    storageBucket: "inventory-management-212d7.firebasestorage.app",
+                    messagingSenderId: "808033831667",
+                    appId: "1:808033831667:web:e5633736dcb054703c4586"
+                };
+                
+                // Firebase 초기화
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                
                 auth = firebase.auth();
                 db = firebase.firestore();
+                
+                showInitStatus('Firebase 초기화 완료');
                 
                 // 인증 상태 변화 감지
                 auth.onAuthStateChanged((user) => {
@@ -897,7 +721,7 @@
                         isOwner = user.email === OWNER_EMAIL;
                         showMainContent();
                         updateUserInfo();
-                        initializeFirestore();
+                        loadData();
                     } else {
                         currentUser = null;
                         isOwner = false;
@@ -905,9 +729,13 @@
                     }
                 });
                 
+                isFirebaseReady = true;
+                updateLoginButton('Google로 로그인', true);
+                
             } catch (error) {
                 console.error('Firebase 초기화 실패:', error);
-                showLoginScreen();
+                showInitStatus('Firebase 초기화 실패: ' + error.message, true);
+                updateLoginButton('초기화 실패', false);
             }
         }
         
@@ -929,258 +757,22 @@
                 document.body.classList.remove('readonly');
                 document.getElementById('readonlyNotice').style.display = 'none';
             }
+            
+            setCurrentDate();
         }
         
         function updateUserInfo() {
             if (currentUser) {
                 document.getElementById('userName').textContent = currentUser.displayName || currentUser.email;
                 document.getElementById('userRole').textContent = isOwner ? '관리자' : '열람자';
-                document.getElementById('userAvatar').src = currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.displayName || currentUser.email)}`;
-            }
-        }
-        
-        function setFirebaseStatus(status, message) {
-            const statusContainer = document.getElementById('firebase-status');
-            const statusDot = document.getElementById('status-dot');
-            const statusText = document.getElementById('status-text');
-            const syncInfo = document.getElementById('sync-info');
-            
-            statusContainer.className = `firebase-status ${status}`;
-            statusDot.className = `status-dot ${status}`;
-            statusText.textContent = message;
-            
-            if (status === 'connected') {
-                syncInfo.textContent = `마지막 동기화: ${new Date().toLocaleTimeString()}`;
-            } else {
-                syncInfo.textContent = '동기화 불가 (로컬 모드)';
-            }
-        }
-        
-        function showStatus(message, type) {
-            const statusDiv = document.getElementById('status');
-            statusDiv.textContent = message;
-            statusDiv.className = `status ${type}`;
-            statusDiv.style.display = 'block';
-            
-            setTimeout(() => {
-                statusDiv.style.display = 'none';
-            }, 3000);
-        }
-        
-        function showLoading(show) {
-            const loadingElements = document.querySelectorAll('.loading');
-            const tables = document.querySelectorAll('.editable-table');
-            
-            loadingElements.forEach(el => {
-                el.style.display = show ? 'block' : 'none';
-            });
-            
-            tables.forEach(table => {
-                table.style.display = show ? 'none' : 'table';
-            });
-        }
-        
-        // ========== 인증 함수 ==========
-        async function signInWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            try {
-                await auth.signInWithPopup(provider);
-            } catch (error) {
-                console.error('로그인 실패:', error);
-                alert('로그인에 실패했습니다: ' + error.message);
-            }
-        }
-        
-        async function signOut() {
-            try {
-                await auth.signOut();
-            } catch (error) {
-                console.error('로그아웃 실패:', error);
-            }
-        }
-        
-        // ========== Firestore 함수 ==========
-        function initializeFirestore() {
-            try {
-                // Firestore 연결 테스트
-                db.enableNetwork().then(() => {
-                    setFirebaseStatus('connected', 'Firebase 연결됨 (실시간 동기화)');
-                    isFirebaseConnected = true;
-                    loadDataFromFirebase();
-                }).catch((error) => {
-                    setFirebaseStatus('error', 'Firebase 연결 실패: ' + error.message);
-                    loadDataFromLocalStorage();
-                });
                 
-            } catch (error) {
-                console.error('Firestore 초기화 실패:', error);
-                setFirebaseStatus('error', 'Firebase 연결 실패 (localStorage 모드)');
-                loadDataFromLocalStorage();
-            }
-        }
-        
-        async function loadDataFromFirebase() {
-            if (!isFirebaseConnected) {
-                loadDataFromLocalStorage();
-                return;
-            }
-            
-            try {
-                showLoading(true);
-                
-                // 보관품 데이터 불러오기
-                const inventoryDoc = await db.collection('inventory').doc('current').get();
-                if (inventoryDoc.exists) {
-                    inventoryData = inventoryDoc.data().items || getDefaultInventoryData();
+                const avatar = document.getElementById('userAvatar');
+                if (currentUser.photoURL) {
+                    avatar.src = currentUser.photoURL;
                 } else {
-                    inventoryData = getDefaultInventoryData();
-                    if (isOwner) await saveInventoryToFirebase();
+                    avatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.displayName || currentUser.email)}&background=3498db&color=fff`;
                 }
-                
-                // 입고이력 데이터 불러오기
-                const historySnapshot = await db.collection('history').orderBy('No').get();
-                historyData = [];
-                historySnapshot.forEach(doc => {
-                    historyData.push(doc.data());
-                });
-                
-                // 이력 카운터 불러오기
-                const counterDoc = await db.collection('settings').doc('counter').get();
-                if (counterDoc.exists) {
-                    historyCounter = counterDoc.data().value || 1;
-                } else if (isOwner) {
-                    await db.collection('settings').doc('counter').set({ value: 1 });
-                }
-                
-                // 실시간 리스너 설정
-                setupRealtimeListeners();
-                
-                showLoading(false);
-                renderAllTables();
-                setFirebaseStatus('connected', 'Firebase 연결됨 (실시간 동기화)');
-                
-            } catch (error) {
-                console.error('Firebase 데이터 로드 실패:', error);
-                setFirebaseStatus('error', 'Firebase 데이터 로드 실패');
-                loadDataFromLocalStorage();
             }
-        }
-        
-        async function saveInventoryToFirebase() {
-            if (!isFirebaseConnected || !isOwner) return;
-            
-            try {
-                await db.collection('inventory').doc('current').set({
-                    items: inventoryData,
-                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                setFirebaseStatus('connected', 'Firebase 연결됨 (저장됨)');
-                setTimeout(() => {
-                    setFirebaseStatus('connected', 'Firebase 연결됨 (실시간 동기화)');
-                }, 2000);
-                
-            } catch (error) {
-                console.error('Firebase 저장 실패:', error);
-                showStatus('Firebase 저장 실패: ' + error.message, 'error');
-            }
-        }
-        
-        async function addHistoryToFirebase(historyItem) {
-            if (!isFirebaseConnected || !isOwner) return;
-            
-            try {
-                await db.collection('history').doc(historyItem.No.toString()).set(historyItem);
-                await db.collection('settings').doc('counter').set({ value: historyCounter });
-                
-            } catch (error) {
-                console.error('Firebase 이력 저장 실패:', error);
-                showStatus('Firebase 이력 저장 실패: ' + error.message, 'error');
-            }
-        }
-        
-        async function deleteHistoryFromFirebase(no) {
-            if (!isFirebaseConnected || !isOwner) return;
-            
-            try {
-                await db.collection('history').doc(no.toString()).delete();
-                
-            } catch (error) {
-                console.error('Firebase 이력 삭제 실패:', error);
-                showStatus('Firebase 이력 삭제 실패: ' + error.message, 'error');
-            }
-        }
-        
-        function setupRealtimeListeners() {
-            if (!isFirebaseConnected) return;
-            
-            // 보관품 데이터 실시간 감지
-            db.collection('inventory').doc('current').onSnapshot((doc) => {
-                if (doc.exists) {
-                    const newData = doc.data().items || [];
-                    if (JSON.stringify(newData) !== JSON.stringify(inventoryData)) {
-                        inventoryData = newData;
-                        renderInventoryTable();
-                        renderRequestTable();
-                        showStatus('보관품 데이터가 다른 기기에서 업데이트되었습니다.', 'success');
-                    }
-                }
-            }, (error) => {
-                console.error('실시간 리스너 오류:', error);
-            });
-            
-            // 입고이력 실시간 감지
-            db.collection('history').onSnapshot((snapshot) => {
-                const newHistoryData = [];
-                snapshot.forEach(doc => {
-                    newHistoryData.push(doc.data());
-                });
-                
-                newHistoryData.sort((a, b) => a.No - b.No);
-                
-                if (JSON.stringify(newHistoryData) !== JSON.stringify(historyData)) {
-                    historyData = newHistoryData;
-                    renderHistoryTable();
-                    showStatus('입고이력이 다른 기기에서 업데이트되었습니다.', 'success');
-                }
-            }, (error) => {
-                console.error('이력 실시간 리스너 오류:', error);
-            });
-        }
-        
-        function loadDataFromLocalStorage() {
-            const savedInventory = localStorage.getItem('inventoryData');
-            const savedHistory = localStorage.getItem('requestHistory');
-            const savedCounter = localStorage.getItem('historyCounter');
-            
-            if (savedInventory) {
-                inventoryData = JSON.parse(savedInventory);
-            } else {
-                inventoryData = getDefaultInventoryData();
-            }
-            
-            if (savedHistory) {
-                historyData = JSON.parse(savedHistory);
-            }
-            
-            if (savedCounter) {
-                historyCounter = parseInt(savedCounter);
-            }
-            
-            showLoading(false);
-            renderAllTables();
-        }
-        
-        // ========== 유틸리티 함수 ==========
-        function getCurrentDateTime() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            
-            return `${year}-${month}-${day} ${hours}:${minutes}`;
         }
         
         function setCurrentDate() {
@@ -1195,14 +787,36 @@
             document.getElementById('current-date').textContent = koreanDate;
         }
         
-        function requireOwnerPermission() {
-            if (!isOwner) {
-                showStatus('⚠️ 관리자만 이 작업을 수행할 수 있습니다.', 'error');
-                return false;
+        // ========== 인증 함수 ==========
+        async function signInWithGoogle() {
+            if (!isFirebaseReady) {
+                showStatus('Firebase가 아직 준비되지 않았습니다.', 'error');
+                return;
             }
-            return true;
+            
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                updateLoginButton('로그인 중...', false);
+                await auth.signInWithPopup(provider);
+                showStatus('로그인 성공!', 'success');
+            } catch (error) {
+                console.error('로그인 실패:', error);
+                showStatus('로그인 실패: ' + error.message, 'error');
+                updateLoginButton('Google로 로그인', true);
+            }
         }
         
+        async function signOut() {
+            try {
+                await auth.signOut();
+                showStatus('로그아웃 되었습니다.', 'success');
+            } catch (error) {
+                console.error('로그아웃 실패:', error);
+                showStatus('로그아웃 실패: ' + error.message, 'error');
+            }
+        }
+        
+        // ========== 데이터 함수 ==========
         function getDefaultInventoryData() {
             return [
                 {
@@ -1250,305 +864,202 @@
             ];
         }
         
-        // ========== 테이블 렌더링 ==========
-        function renderAllTables() {
-            renderInventoryTable();
-            renderRequestTable();
-            renderHistoryTable();
-            updateFacilityFilterDisplay();
+        async function loadData() {
+            try {
+                document.getElementById('firebase-status').className = 'firebase-status connecting';
+                document.getElementById('status-text').textContent = '데이터 로딩 중...';
+                
+                // 기본 데이터 로드
+                inventoryData = getDefaultInventoryData();
+                historyData = [];
+                
+                // 테이블 렌더링
+                renderInventoryTable();
+                renderRequestTable();
+                renderHistoryTable();
+                
+                document.getElementById('firebase-status').className = 'firebase-status';
+                document.getElementById('status-text').textContent = '데이터 로드 완료';
+                
+                showStatus('데이터를 성공적으로 불러왔습니다.', 'success');
+                
+            } catch (error) {
+                console.error('데이터 로드 실패:', error);
+                document.getElementById('firebase-status').className = 'firebase-status error';
+                document.getElementById('status-text').textContent = '데이터 로드 실패';
+                showStatus('데이터 로드 실패: ' + error.message, 'error');
+            }
         }
         
+        // ========== 테이블 렌더링 ==========
         function renderInventoryTable() {
             const tbody = document.getElementById('inventory-tbody');
             tbody.innerHTML = '';
             
-            const filteredData = currentFacilityFilter 
-                ? inventoryData.filter(item => item.생산시설 === currentFacilityFilter)
-                : inventoryData;
-            
-            if (filteredData.length === 0) {
-                const row = document.createElement('tr');
-                row.innerHTML = '<td colspan="5" style="text-align: center; color: #666;">선택된 생산시설에 품목이 없습니다.</td>';
-                tbody.appendChild(row);
+            if (inventoryData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #666;">데이터가 없습니다.</td></tr>';
                 return;
             }
             
-            if (!currentFacilityFilter) {
-                const groupedData = filteredData.reduce((groups, item) => {
-                    const facility = item.생산시설;
-                    if (!groups[facility]) {
-                        groups[facility] = [];
-                    }
-                    groups[facility].push(item);
-                    return groups;
-                }, {});
-
-                Object.keys(groupedData).sort().forEach(facility => {
-                    const headerRow = document.createElement('tr');
-                    headerRow.classList.add('group-header');
-                    headerRow.innerHTML = `
-                        <td colspan="5" style="text-align: center; padding: 10px;">${facility}</td>
-                    `;
-                    tbody.appendChild(headerRow);
-
-                    groupedData[facility].forEach((item) => {
-                        const globalIndex = inventoryData.indexOf(item);
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${item.생산시설}</td>
-                            <td>${item.품목}</td>
-                            <td>${item.규격}</td>
-                            <td>
-                                <input type="number" class="editable-input" value="${item.수량}" 
-                                       onchange="updateInventoryQuantity(${globalIndex}, this.value)" style="text-align: center;"
-                                       ${!isOwner ? 'disabled' : ''}>
-                            </td>
-                            <td>${item.단위}</td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                });
-            } else {
-                filteredData.forEach((item) => {
-                    const globalIndex = inventoryData.indexOf(item);
+            // 생산시설별 그룹화
+            const groupedData = inventoryData.reduce((groups, item) => {
+                const facility = item.생산시설;
+                if (!groups[facility]) {
+                    groups[facility] = [];
+                }
+                groups[facility].push(item);
+                return groups;
+            }, {});
+            
+            // 그룹별로 테이블 렌더링
+            Object.keys(groupedData).sort().forEach(facility => {
+                // 그룹 헤더
+                const headerRow = document.createElement('tr');
+                headerRow.style.backgroundColor = '#e3f2fd';
+                headerRow.style.fontWeight = '600';
+                headerRow.style.color = '#1565c0';
+                headerRow.innerHTML = `
+                    <td colspan="5" style="text-align: center; padding: 10px;">${facility}</td>
+                `;
+                tbody.appendChild(headerRow);
+                
+                // 그룹 데이터
+                groupedData[facility].forEach((item, index) => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${item.생산시설}</td>
-                        <td>${item.품목}</td>
-                        <td>${item.규격}</td>
+                        <td style="text-align: left; padding-left: 12px;">${item.품목}</td>
+                        <td style="text-align: left; padding-left: 12px;">${item.규격}</td>
                         <td>
-                            <input type="number" class="editable-input" value="${item.수량}" 
-                                   onchange="updateInventoryQuantity(${globalIndex}, this.value)" style="text-align: center;"
+                            <input type="number" value="${item.수량}" 
+                                   style="width: 100%; border: none; background: transparent; text-align: center; padding: 4px;"
                                    ${!isOwner ? 'disabled' : ''}>
                         </td>
                         <td>${item.단위}</td>
                     `;
                     tbody.appendChild(row);
                 });
-            }
+            });
         }
         
         function renderRequestTable() {
             const tbody = document.getElementById('request-tbody');
             tbody.innerHTML = '';
             
-            const filteredData = currentFacilityFilter 
-                ? inventoryData.filter(item => item.생산시설 === currentFacilityFilter)
-                : inventoryData;
-
-            if (filteredData.length === 0) {
-                const row = document.createElement('tr');
-                row.innerHTML = '<td colspan="8" style="text-align: center; color: #666;">선택된 생산시설에 품목이 없습니다.</td>';
-                tbody.appendChild(row);
+            if (inventoryData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666;">데이터가 없습니다.</td></tr>';
                 return;
             }
-
-            if (!currentFacilityFilter) {
-                const groupedData = filteredData.reduce((groups, item) => {
-                    const facility = item.생산시설;
-                    if (!groups[facility]) {
-                        groups[facility] = [];
-                    }
-                    groups[facility].push(item);
-                    return groups;
-                }, {});
-
-                let rowCounter = 1;
-                Object.keys(groupedData).sort().forEach(facility => {
-                    const headerRow = document.createElement('tr');
-                    headerRow.classList.add('group-header');
-                    headerRow.innerHTML = `
-                        <td colspan="8" style="text-align: center; padding: 8px;">${facility}</td>
-                    `;
-                    tbody.appendChild(headerRow);
-
-                    groupedData[facility].forEach((item) => {
-                        const globalIndex = inventoryData.indexOf(item);
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${rowCounter++}</td>
-                            <td>${item.생산시설}</td>
-                            <td>${item.품목}</td>
-                            <td>${item.규격}</td>
-                            <td class="calculated-cell">${item.수량.toLocaleString()}</td>
-                            <td>
-                                <input type="number" class="editable-input" placeholder="0" 
-                                       id="request-${globalIndex}" onchange="calculateRemaining(${globalIndex})" style="text-align: center;"
-                                       ${!isOwner ? 'disabled' : ''}>
-                            </td>
-                            <td id="remaining-${globalIndex}" class="calculated-cell">-</td>
-                            <td style="font-size: 10px; color: #666;">${getCurrentDateTime()}</td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                });
-            } else {
-                filteredData.forEach((item, index) => {
-                    const globalIndex = inventoryData.indexOf(item);
+            
+            // 생산시설별 그룹화
+            const groupedData = inventoryData.reduce((groups, item) => {
+                const facility = item.생산시설;
+                if (!groups[facility]) {
+                    groups[facility] = [];
+                }
+                groups[facility].push(item);
+                return groups;
+            }, {});
+            
+            let rowCounter = 1;
+            
+            // 그룹별로 테이블 렌더링
+            Object.keys(groupedData).sort().forEach(facility => {
+                // 그룹 헤더
+                const headerRow = document.createElement('tr');
+                headerRow.style.backgroundColor = '#e3f2fd';
+                headerRow.style.fontWeight = '600';
+                headerRow.style.color = '#1565c0';
+                headerRow.innerHTML = `
+                    <td colspan="8" style="text-align: center; padding: 8px;">${facility}</td>
+                `;
+                tbody.appendChild(headerRow);
+                
+                // 그룹 데이터
+                groupedData[facility].forEach((item) => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td>${index + 1}</td>
+                        <td>${rowCounter++}</td>
                         <td>${item.생산시설}</td>
-                        <td>${item.품목}</td>
-                        <td>${item.규격}</td>
-                        <td class="calculated-cell">${item.수량.toLocaleString()}</td>
+                        <td style="text-align: left; padding-left: 12px;">${item.품목}</td>
+                        <td style="text-align: left; padding-left: 12px;">${item.규격}</td>
+                        <td style="background-color: #e8f4f8; font-weight: 500;">${item.수량.toLocaleString()}</td>
                         <td>
-                            <input type="number" class="editable-input" placeholder="0" 
-                                   id="request-${globalIndex}" onchange="calculateRemaining(${globalIndex})" style="text-align: center;"
+                            <input type="number" placeholder="0" 
+                                   style="width: 100%; border: none; background: transparent; text-align: center; padding: 4px;"
                                    ${!isOwner ? 'disabled' : ''}>
                         </td>
-                        <td id="remaining-${globalIndex}" class="calculated-cell">-</td>
+                        <td style="background-color: #e8f4f8; font-weight: 500;">-</td>
                         <td style="font-size: 10px; color: #666;">${getCurrentDateTime()}</td>
                     `;
                     tbody.appendChild(row);
                 });
-            }
+            });
         }
         
-        function renderHistoryTable(dataToRender = null) {
+        function renderHistoryTable() {
             const tbody = document.getElementById('history-tbody');
             tbody.innerHTML = '';
             
-            let data = dataToRender || historyData;
-            
-            if (currentFacilityFilter) {
-                data = data.filter(item => item.생산시설 === currentFacilityFilter);
+            if (historyData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: #666;">등록된 입고 이력이 없습니다.</td></tr>';
+                return;
             }
             
-            data.forEach((item, index) => {
+            historyData.forEach((item) => {
                 const row = document.createElement('tr');
-                const remainingClass = item.잔량 < 0 ? 'negative-value' : '';
-                
                 row.innerHTML = `
                     <td>${item.No}</td>
                     <td>${item.입고일}</td>
                     <td>${item.생산시설}</td>
                     <td>${item.요청기관 || '-'}</td>
-                    <td>${item.품목}</td>
+                    <td style="text-align: left; padding-left: 12px;">${item.품목}</td>
                     <td>${item.입고수량.toLocaleString()}</td>
                     <td>${item.초기수량.toLocaleString()}</td>
-                    <td class="${remainingClass}">${item.잔량.toLocaleString()}</td>
+                    <td>${item.잔량.toLocaleString()}</td>
                     <td style="font-size: 10px; color: #666;">${item.등록일시 || '-'}</td>
                     <td>
-                        ${isOwner ? `<button class="btn btn-danger" onclick="deleteHistory(${item.No})" style="padding: 4px 8px; font-size: 10px;">삭제</button>` : '-'}
+                        ${isOwner ? `<button onclick="deleteHistory(${item.No})" style="padding: 4px 8px; font-size: 10px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer;">삭제</button>` : '-'}
                     </td>
                 `;
                 tbody.appendChild(row);
             });
-
-            if (data.length === 0) {
-                const emptyMessage = currentFacilityFilter 
-                    ? `선택된 생산시설(${currentFacilityFilter})의 입고 이력이 없습니다.`
-                    : '등록된 입고 이력이 없습니다.';
-                const row = document.createElement('tr');
-                row.innerHTML = `<td colspan="10" style="text-align: center; color: #666;">${emptyMessage}</td>`;
-                tbody.appendChild(row);
+        }
+        
+        // ========== 유틸리티 함수 ==========
+        function getCurrentDateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
+        }
+        
+        function requireOwnerPermission() {
+            if (!isOwner) {
+                showStatus('⚠️ 관리자만 이 작업을 수행할 수 있습니다.', 'error');
+                return false;
             }
-        }
-        
-        // ========== 데이터 조작 함수 ==========
-        async function updateInventoryQuantity(index, newValue) {
-            if (!requireOwnerPermission()) return;
-            
-            const oldValue = inventoryData[index].수량;
-            const newQuantity = parseInt(newValue) || 0;
-            
-            inventoryData[index].수량 = newQuantity;
-            
-            // Firebase에 저장
-            await saveInventoryToFirebase();
-            
-            // localStorage에도 백업 저장
-            localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
-            
-            renderRequestTable();
-            
-            const item = inventoryData[index];
-            showStatus(`✅ "${item.품목}" 수량이 ${oldValue} → ${newQuantity}로 업데이트되었습니다.`, 'success');
-        }
-        
-        function calculateRemaining(index) {
-            const requestInput = document.getElementById(`request-${index}`);
-            const remainingCell = document.getElementById(`remaining-${index}`);
-            
-            if (!requestInput || !remainingCell) return;
-            
-            const requestQuantity = parseInt(requestInput.value) || 0;
-            const currentInventoryQuantity = inventoryData[index].수량;
-            const remaining = currentInventoryQuantity - requestQuantity;
-            
-            remainingCell.textContent = remaining.toLocaleString();
-            remainingCell.className = remaining < 0 ? 'calculated-cell negative-value' : 'calculated-cell';
-            
-            if (remaining < 0) {
-                remainingCell.title = `⚠️ 현재 보유량(${currentInventoryQuantity})보다 ${Math.abs(remaining)}개 부족합니다.`;
-            } else {
-                remainingCell.title = `입고 후 예상 잔량: ${remaining}`;
-            }
-        }
-        
-        function filterByFacility() {
-            currentFacilityFilter = document.getElementById('targetFacility').value;
-            renderAllTables();
-        }
-        
-        function updateFacilityFilterDisplay() {
-            const filterText = currentFacilityFilter 
-                ? `<span class="filter-highlight">${currentFacilityFilter}</span>`
-                : `<strong>전체 생산시설</strong>`;
-            
-            ['facilityFilter', 'inventoryFilter', 'historyFilter'].forEach(id => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.innerHTML = `현재 표시: ${filterText}`;
-                }
-            });
+            return true;
         }
         
         function showSheet(sheetName) {
+            // 모든 탭과 컨텐츠에서 active 클래스 제거
             document.querySelectorAll('.sheet-tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.sheet-content').forEach(content => content.classList.remove('active'));
             
+            // 선택된 탭과 컨텐츠에 active 클래스 추가
             document.querySelector(`[data-sheet="${sheetName}"]`).classList.add('active');
             document.getElementById(`sheet-${sheetName}`).classList.add('active');
         }
         
-        // ========== 이벤트 리스너 ==========
-        document.addEventListener('DOMContentLoaded', function() {
-            // Firebase 초기화
-            initializeFirebase();
-            
-            // 현재 날짜 설정
-            setCurrentDate();
-            
-            // 이벤트 리스너 등록
-            document.getElementById('loginBtn').addEventListener('click', signInWithGoogle);
-            document.getElementById('logoutBtn').addEventListener('click', signOut);
-            document.getElementById('targetFacility').addEventListener('change', filterByFacility);
-            
-            // 시트 탭 이벤트
-            document.querySelectorAll('.sheet-tab').forEach(tab => {
-                tab.addEventListener('click', (e) => {
-                    const sheetName = e.target.getAttribute('data-sheet');
-                    showSheet(sheetName);
-                });
-            });
-            
-            // 버튼 이벤트
-            document.getElementById('addRequestBtn').addEventListener('click', addRequestHistory);
-            document.getElementById('printSheetBtn').addEventListener('click', printCurrentSheet);
-            document.getElementById('exportBtn').addEventListener('click', exportToExcel);
-            document.getElementById('syncBtn').addEventListener('click', syncNow);
-            document.getElementById('resetBtn').addEventListener('click', resetToDefault);
-            document.getElementById('clearBtn').addEventListener('click', clearAllData);
-            document.getElementById('filterBtn').addEventListener('click', filterHistory);
-            document.getElementById('clearFilterBtn').addEventListener('click', clearFilter);
-        });
-        
-        // ========== 기타 함수들 (간단 구현) ==========
+        // ========== 기능 함수들 ==========
         async function addRequestHistory() {
             if (!requireOwnerPermission()) return;
-            showStatus('입고 요청 등록 기능이 구현되었습니다.', 'success');
+            showStatus('입고 요청 등록 기능 - 개발 중', 'success');
         }
         
         function printCurrentSheet() {
@@ -1557,142 +1068,84 @@
         }
         
         function exportToExcel() {
-            showStatus('엑셀 내보내기 기능이 구현되었습니다.', 'success');
+            showStatus('엑셀 내보내기 기능 - 개발 중', 'success');
         }
         
         function syncNow() {
-            if (isFirebaseConnected) {
-                loadDataFromFirebase();
-                showStatus('수동 동기화가 완료되었습니다.', 'success');
-            } else {
-                showStatus('Firebase 연결이 필요합니다.', 'error');
-            }
+            loadData();
+            showStatus('수동 동기화 완료', 'success');
         }
         
         async function resetToDefault() {
             if (!requireOwnerPermission()) return;
             
-            if (confirm('⚠️ 보관품 데이터 리셋\n\n보관품 수량을 기본값으로 되돌립니다.\n(입고이력은 유지됩니다)\n\n계속하시겠습니까?')) {
-                
+            if (confirm('⚠️ 보관품 데이터를 기본값으로 리셋하시겠습니까?')) {
                 inventoryData = getDefaultInventoryData();
-                
-                // Firebase에 저장
-                await saveInventoryToFirebase();
-                localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
-                
-                lastRegisteredRequest = null;
-                
                 renderInventoryTable();
                 renderRequestTable();
-                
-                showStatus('✅ 보관품 데이터가 기본값으로 리셋되고 동기화되었습니다.', 'success');
+                showStatus('✅ 보관품 데이터가 기본값으로 리셋되었습니다.', 'success');
             }
         }
         
-        async function clearAllData() {
+        function deleteHistory(no) {
             if (!requireOwnerPermission()) return;
             
-            if (confirm('⚠️ 모든 데이터 초기화\n\n다음 작업이 수행됩니다:\n• 모든 입고 이력 삭제\n• 보관품 수량을 기본값으로 리셋\n• 저장된 모든 데이터 삭제\n\n계속하시겠습니까?')) {
-                
-                historyData = [];
-                historyCounter = 1;
-                inventoryData = getDefaultInventoryData();
+            if (confirm(`이력 번호 ${no}를 삭제하시겠습니까?`)) {
+                historyData = historyData.filter(item => item.No !== no);
+                renderHistoryTable();
+                showStatus('✅ 이력이 삭제되었습니다.', 'success');
+            }
+        }
+        
+        // ========== 이벤트 리스너 ==========
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Firebase SDK 로딩 대기
+                await loadFirebaseSDKs();
                 
                 // Firebase 초기화
-                if (isFirebaseConnected) {
-                    try {
-                        // 모든 이력 데이터 삭제
-                        const historySnapshot = await db.collection('history').get();
-                        const batch = db.batch();
-                        historySnapshot.docs.forEach(doc => {
-                            batch.delete(doc.ref);
-                        });
-                        await batch.commit();
-                        
-                        // 카운터 리셋
-                        await db.collection('settings').doc('counter').set({ value: 1 });
-                        
-                        // 보관품 데이터 리셋
-                        await saveInventoryToFirebase();
-                    } catch (error) {
-                        console.error('Firebase 초기화 실패:', error);
-                    }
-                }
+                await initializeFirebase();
                 
-                // localStorage 초기화
-                localStorage.removeItem('requestHistory');
-                localStorage.removeItem('historyCounter');
-                localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+                // 이벤트 리스너 등록
+                document.getElementById('loginBtn').addEventListener('click', signInWithGoogle);
+                document.getElementById('logoutBtn').addEventListener('click', signOut);
                 
-                renderAllTables();
+                // 시트 탭 이벤트
+                document.querySelectorAll('.sheet-tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        const sheetName = e.target.getAttribute('data-sheet');
+                        showSheet(sheetName);
+                    });
+                });
                 
-                showStatus('✅ 모든 데이터가 기본값으로 초기화되고 동기화되었습니다.', 'success');
+                // 버튼 이벤트
+                document.getElementById('addRequestBtn').addEventListener('click', addRequestHistory);
+                document.getElementById('printSheetBtn').addEventListener('click', printCurrentSheet);
+                document.getElementById('exportBtn').addEventListener('click', exportToExcel);
+                document.getElementById('syncBtn').addEventListener('click', syncNow);
+                document.getElementById('resetBtn').addEventListener('click', resetToDefault);
+                
+                showInitStatus('시스템 초기화 완료!');
+                
+            } catch (error) {
+                console.error('시스템 초기화 실패:', error);
+                showInitStatus('시스템 초기화 실패: ' + error.message, true);
+                
+                // 기본 데이터라도 로드
+                inventoryData = getDefaultInventoryData();
+                renderInventoryTable();
+                renderRequestTable();
+                renderHistoryTable();
+                
+                updateLoginButton('오프라인 모드', false);
+                document.getElementById('loadingText').textContent = '⚠️ 오프라인 모드로 실행 중';
             }
-        }
-        
-        function filterHistory() {
-            const startDate = document.getElementById('filterStartDate').value;
-            const endDate = document.getElementById('filterEndDate').value;
-            
-            if (!startDate || !endDate) {
-                showStatus('시작일과 종료일을 모두 입력해주세요.', 'error');
-                return;
-            }
-
-            let filteredData = historyData.filter(item => {
-                const itemDate = item.입고일;
-                return itemDate >= startDate && itemDate <= endDate;
-            });
-
-            if (currentFacilityFilter) {
-                filteredData = filteredData.filter(item => item.생산시설 === currentFacilityFilter);
-            }
-
-            renderHistoryTable(filteredData);
-            showStatus(`${filteredData.length}건의 이력이 필터링되었습니다.`, 'success');
-        }
-        
-        function clearFilter() {
-            document.getElementById('filterStartDate').value = '';
-            document.getElementById('filterEndDate').value = '';
-            renderHistoryTable();
-            showStatus('필터가 해제되었습니다.', 'success');
-        }
-        
-        async function deleteHistory(no) {
-            if (!requireOwnerPermission()) return;
-            
-            const historyItem = historyData.find(item => item.No === no);
-            if (!historyItem) return;
-            
-            if (confirm(`이 이력을 삭제하시겠습니까?\n\n📋 삭제 대상:\n• 품목: ${historyItem.품목}\n• 생산시설: ${historyItem.생산시설}\n• 입고수량: ${historyItem.입고수량}\n\n⚠️ 삭제 시 해당 품목의 수량이 ${historyItem.입고수량}만큼 증가합니다.`)) {
-                
-                const inventoryItem = inventoryData.find(item => 
-                    item.품목 === historyItem.품목 && item.생산시설 === historyItem.생산시설
-                );
-                
-                let restoredQuantity = 0;
-                if (inventoryItem) {
-                    inventoryItem.수량 += historyItem.입고수량;
-                    restoredQuantity = inventoryItem.수량;
-                }
-                
-                historyData = historyData.filter(item => item.No !== no);
-                
-                // Firebase에서 삭제
-                await deleteHistoryFromFirebase(no);
-                await saveInventoryToFirebase();
-                
-                // localStorage 업데이트
-                localStorage.setItem('requestHistory', JSON.stringify(historyData));
-                localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
-                
-                renderAllTables();
-                
-                showStatus(`✅ 이력이 삭제되고 "${historyItem.품목}" 수량이 ${restoredQuantity}로 복원되었습니다.`, 'success');
-            }
-        }
-        
+        });
     </script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 </body>
 </html>
