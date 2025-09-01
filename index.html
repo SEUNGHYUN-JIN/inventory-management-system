@@ -618,7 +618,6 @@
             <div class="sheet-tab active" onclick="showSheet('보관품')">보관품 현황</div>
             <div class="sheet-tab" onclick="showSheet('입고요청서')">입고요청서</div>
             <div class="sheet-tab" onclick="showSheet('입고이력')">입고이력</div>
-            <div class="sheet-tab" onclick="showSheet('관리자로그')">관리자 로그</div>
         </div>
         
         <!-- 보관품 시트 -->
@@ -742,55 +741,6 @@
                 <div>담당자: _______________</div>
             </div>
         </div>
-        
-        <!-- 관리자 로그 시트 -->
-        <div id="sheet-관리자로그" class="sheet-content">
-            <div class="print-header">관리자 활동 로그</div>
-            <div class="print-info">
-                <div>출력일: <span id="print-date-adminlog"></span></div>
-                <div>관리기관: <span id="print-org-adminlog"></span></div>
-            </div>
-            
-            <div class="summary-card">
-                <h4>관리자 활동 로그</h4>
-                <p>생산시설 추가, 품목 추가 등 모든 관리자 활동이 기록됩니다.</p>
-                <p id="adminLogFilter">현재 표시: <strong>전체 활동</strong></p>
-            </div>
-            
-            <div class="history-filters">
-                <label>활동 유형:</label>
-                <select id="filterActivityType">
-                    <option value="">전체 활동</option>
-                    <option value="생산시설추가">생산시설 추가</option>
-                    <option value="품목추가">품목 추가</option>
-                </select>
-                <label>기간 필터:</label>
-                <input type="date" id="filterAdminStartDate">
-                <span>~</span>
-                <input type="date" id="filterAdminEndDate">
-                <button class="btn" onclick="filterAdminLog()">필터 적용</button>
-                <button class="btn btn-warning" onclick="clearAdminFilter()">필터 해제</button>
-            </div>
-            
-            <table class="editable-table">
-                <thead>
-                    <tr>
-                        <th style="width: 5%;">No</th>
-                        <th style="width: 12%;">일시</th>
-                        <th style="width: 15%;">활동 유형</th>
-                        <th style="width: 20%;">대상</th>
-                        <th style="width: 30%;">세부사항</th>
-                        <th style="width: 18%;">IP/기기 정보</th>
-                    </tr>
-                </thead>
-                <tbody id="admin-log-tbody">
-                </tbody>
-            </table>
-            
-            <div class="print-footer">
-                <div>담당자: _______________</div>
-            </div>
-        </div>
     </div>
 
     <!-- 생산시설 추가 모달 -->
@@ -884,33 +834,22 @@
         let isFirebaseConnected = false;
         
         try {
-            console.log('Firebase 초기화 시작...');
             firebase.initializeApp(firebaseConfig);
             db = firebase.firestore();
-            console.log('Firebase 앱 초기화 완료');
             
-            // Firestore 연결 테스트 - 간단한 읽기 시도
-            db.collection('test').doc('connection').get().then((doc) => {
-                console.log('Firebase 연결 테스트 성공');
+            // Firestore 연결 테스트
+            db.enableNetwork().then(() => {
                 setFirebaseStatus('connected', 'Firebase 연결됨 (실시간 동기화)');
                 isFirebaseConnected = true;
                 loadDataFromFirebase();
             }).catch((error) => {
-                console.error('Firebase 연결 테스트 실패:', error);
-                console.log('네트워크 상태 확인:', navigator.onLine);
-                console.log('현재 URL:', window.location.href);
-                
-                if (window.location.protocol === 'file:') {
-                    setFirebaseStatus('error', 'Firebase 연결 실패: 로컬 파일에서는 Firebase가 작동하지 않습니다. HTTP 서버 사용 필요');
-                } else {
-                    setFirebaseStatus('error', 'Firebase 연결 실패: ' + error.message);
-                }
+                setFirebaseStatus('error', 'Firebase 연결 실패: ' + error.message);
                 loadDataFromLocalStorage();
             });
             
         } catch (error) {
             console.error('Firebase 초기화 실패:', error);
-            setFirebaseStatus('error', 'Firebase 초기화 실패: ' + error.message);
+            setFirebaseStatus('error', 'Firebase 연결 실패 (localStorage 모드)');
             loadDataFromLocalStorage();
         }
         
@@ -939,8 +878,6 @@
         let currentFacilityFilter = '';
         let lastRegisteredRequest = null;
         let facilitiesData = [];
-        let adminLogData = [];
-        let adminLogCounter = 1;
         
         // ========== Firebase 데이터 함수 ==========
         
@@ -985,21 +922,6 @@
                     historyCounter = counterDoc.data().value || 1;
                 } else {
                     await db.collection('settings').doc('counter').set({ value: 1 });
-                }
-                
-                // 관리자 로그 데이터 불러오기
-                const adminLogSnapshot = await db.collection('adminLog').orderBy('No').get();
-                adminLogData = [];
-                adminLogSnapshot.forEach(doc => {
-                    adminLogData.push(doc.data());
-                });
-                
-                // 관리자 로그 카운터 불러오기
-                const adminLogCounterDoc = await db.collection('settings').doc('adminLogCounter').get();
-                if (adminLogCounterDoc.exists) {
-                    adminLogCounter = adminLogCounterDoc.data().value || 1;
-                } else {
-                    await db.collection('settings').doc('adminLogCounter').set({ value: 1 });
                 }
                 
                 // 실시간 리스너 설정
@@ -1081,57 +1003,6 @@
             }
         }
         
-        // Firebase에 관리자 로그 추가
-        async function addAdminLogToFirebase(logItem) {
-            if (!isFirebaseConnected) return;
-            
-            try {
-                await db.collection('adminLog').doc(logItem.No.toString()).set(logItem);
-                await db.collection('settings').doc('adminLogCounter').set({ value: adminLogCounter });
-                
-            } catch (error) {
-                console.error('Firebase 관리자 로그 저장 실패:', error);
-                showStatus('Firebase 관리자 로그 저장 실패: ' + error.message, 'error');
-            }
-        }
-        
-        // 관리자 활동 로그 기록
-        async function logAdminActivity(activityType, target, details) {
-            const logItem = {
-                No: adminLogCounter++,
-                일시: getCurrentDateTime(),
-                활동유형: activityType,
-                대상: target,
-                세부사항: details,
-                IP기기정보: await getDeviceInfo()
-            };
-            
-            adminLogData.push(logItem);
-            
-            // Firebase에 저장
-            await addAdminLogToFirebase(logItem);
-            
-            // localStorage에도 저장
-            localStorage.setItem('adminLogData', JSON.stringify(adminLogData));
-            localStorage.setItem('adminLogCounter', adminLogCounter.toString());
-            
-            renderAdminLogTable();
-        }
-        
-        // 기기 정보 가져오기
-        async function getDeviceInfo() {
-            const userAgent = navigator.userAgent;
-            const platform = navigator.platform;
-            let deviceInfo = `${platform}`;
-            
-            if (userAgent.includes('Chrome')) deviceInfo += ' - Chrome';
-            else if (userAgent.includes('Firefox')) deviceInfo += ' - Firefox';
-            else if (userAgent.includes('Safari')) deviceInfo += ' - Safari';
-            else deviceInfo += ' - 기타 브라우저';
-            
-            // IP 주소는 보안상 제한적이므로 간단한 정보만
-            return `${deviceInfo} (${new Date().toLocaleTimeString()})`;
-        }
         
         // 실시간 리스너 설정
         function setupRealtimeListeners() {
@@ -1184,23 +1055,6 @@
                 console.error('이력 실시간 리스너 오류:', error);
             });
             
-            // 관리자 로그 실시간 감지
-            db.collection('adminLog').onSnapshot((snapshot) => {
-                const newAdminLogData = [];
-                snapshot.forEach(doc => {
-                    newAdminLogData.push(doc.data());
-                });
-                
-                newAdminLogData.sort((a, b) => a.No - b.No);
-                
-                if (JSON.stringify(newAdminLogData) !== JSON.stringify(adminLogData)) {
-                    adminLogData = newAdminLogData;
-                    renderAdminLogTable();
-                    showStatus('관리자 로그가 다른 기기에서 업데이트되었습니다.', 'success');
-                }
-            }, (error) => {
-                console.error('관리자 로그 실시간 리스너 오류:', error);
-            });
         }
         
         // localStorage에서 데이터 불러오기 (폴백)
@@ -1209,8 +1063,6 @@
             const savedInventory = localStorage.getItem('inventoryData');
             const savedHistory = localStorage.getItem('requestHistory');
             const savedCounter = localStorage.getItem('historyCounter');
-            const savedAdminLog = localStorage.getItem('adminLogData');
-            const savedAdminLogCounter = localStorage.getItem('adminLogCounter');
             
             if (savedFacilities) {
                 facilitiesData = JSON.parse(savedFacilities);
@@ -1230,14 +1082,6 @@
             
             if (savedCounter) {
                 historyCounter = parseInt(savedCounter);
-            }
-            
-            if (savedAdminLog) {
-                adminLogData = JSON.parse(savedAdminLog);
-            }
-            
-            if (savedAdminLogCounter) {
-                adminLogCounter = parseInt(savedAdminLogCounter);
             }
             
             showLoading(false);
@@ -1327,7 +1171,6 @@
             renderInventoryTable();
             renderRequestTable();
             renderHistoryTable();
-            renderAdminLogTable();
             updateFacilityFilterDisplay();
         }
         
@@ -1814,13 +1657,6 @@
             // localStorage에도 저장
             localStorage.setItem('facilitiesData', JSON.stringify(facilitiesData));
             
-            // 관리자 활동 로그 기록
-            await logAdminActivity(
-                '생산시설추가', 
-                facilityName, 
-                `새로운 생산시설 "${facilityName}"을 시스템에 추가했습니다.`
-            );
-            
             updateFacilityOptions();
             closeModal('addFacilityModal');
             
@@ -1914,13 +1750,6 @@
             // localStorage에도 저장
             localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
             
-            // 관리자 활동 로그 기록
-            await logAdminActivity(
-                '품목추가', 
-                `${facility} - ${name}`, 
-                `생산시설 "${facility}"에 새로운 품목 "${name}" (규격: ${spec}, 수량: ${quantity} ${unit})을 추가했습니다.`
-            );
-            
             renderAllTables();
             closeModal('addItemModal');
             
@@ -1988,72 +1817,6 @@
                 
                 showStatus('✅ 모든 데이터가 기본값으로 초기화되고 동기화되었습니다.', 'success');
             }
-        }
-        
-        // ========== 관리자 로그 렌더링 함수 ==========
-        
-        function renderAdminLogTable(dataToRender = null) {
-            const tbody = document.getElementById('admin-log-tbody');
-            tbody.innerHTML = '';
-            
-            let data = dataToRender || adminLogData;
-            
-            data.forEach((item, index) => {
-                const row = document.createElement('tr');
-                
-                row.innerHTML = `
-                    <td>${item.No}</td>
-                    <td style="font-size: 11px;">${item.일시}</td>
-                    <td><span class="filter-highlight">${item.활동유형}</span></td>
-                    <td style="font-weight: 500;">${item.대상}</td>
-                    <td style="font-size: 11px;">${item.세부사항}</td>
-                    <td style="font-size: 10px; color: #666;">${item.IP기기정보}</td>
-                `;
-                tbody.appendChild(row);
-            });
-
-            if (data.length === 0) {
-                const row = document.createElement('tr');
-                row.innerHTML = '<td colspan="6" style="text-align: center; color: #666;">등록된 관리자 활동이 없습니다.</td>';
-                tbody.appendChild(row);
-            }
-        }
-        
-        function filterAdminLog() {
-            const activityType = document.getElementById('filterActivityType').value;
-            const startDate = document.getElementById('filterAdminStartDate').value;
-            const endDate = document.getElementById('filterAdminEndDate').value;
-            
-            let filteredData = adminLogData;
-            
-            // 활동 유형 필터
-            if (activityType) {
-                filteredData = filteredData.filter(item => item.활동유형 === activityType);
-            }
-            
-            // 날짜 필터
-            if (startDate && endDate) {
-                filteredData = filteredData.filter(item => {
-                    const itemDate = item.일시.split(' ')[0]; // YYYY-MM-DD 부분만 추출
-                    return itemDate >= startDate && itemDate <= endDate;
-                });
-            }
-
-            renderAdminLogTable(filteredData);
-            
-            let filterText = `${filteredData.length}건의 활동이 필터링되었습니다.`;
-            if (activityType) filterText += ` (유형: ${activityType})`;
-            if (startDate && endDate) filterText += ` (기간: ${startDate} ~ ${endDate})`;
-            
-            showStatus(filterText, 'success');
-        }
-        
-        function clearAdminFilter() {
-            document.getElementById('filterActivityType').value = '';
-            document.getElementById('filterAdminStartDate').value = '';
-            document.getElementById('filterAdminEndDate').value = '';
-            renderAdminLogTable();
-            showStatus('관리자 로그 필터가 해제되었습니다.', 'success');
         }
         
         function filterHistory() {
@@ -2241,8 +2004,6 @@
             document.getElementById('print-org-request').textContent = facilityName;
             document.getElementById('print-date-history').textContent = currentDate;
             document.getElementById('print-org-history').textContent = facilityName;
-            document.getElementById('print-date-adminlog').textContent = currentDate;
-            document.getElementById('print-org-adminlog').textContent = facilityName;
         }
         
         function exportToExcel() {
