@@ -942,6 +942,9 @@
         let adminLogData = [];
         let adminLogCounter = 1;
         
+        // 관리자 로그 기능 활성화/비활성화 (Firebase 권한 문제 시 false로 설정)
+        const ENABLE_ADMIN_LOG = false;
+        
         // ========== Firebase 데이터 함수 ==========
         
         // Firebase에서 데이터 불러오기
@@ -987,19 +990,25 @@
                     await db.collection('settings').doc('counter').set({ value: 1 });
                 }
                 
-                // 관리자 로그 데이터 불러오기
-                const adminLogSnapshot = await db.collection('adminLog').orderBy('No').get();
-                adminLogData = [];
-                adminLogSnapshot.forEach(doc => {
-                    adminLogData.push(doc.data());
-                });
-                
-                // 관리자 로그 카운터 불러오기
-                const adminLogCounterDoc = await db.collection('settings').doc('adminLogCounter').get();
-                if (adminLogCounterDoc.exists) {
-                    adminLogCounter = adminLogCounterDoc.data().value || 1;
-                } else {
-                    await db.collection('settings').doc('adminLogCounter').set({ value: 1 });
+                // 관리자 로그 데이터 불러오기 (ENABLE_ADMIN_LOG가 true일 때만)
+                if (ENABLE_ADMIN_LOG) {
+                    try {
+                        const adminLogSnapshot = await db.collection('adminLog').orderBy('No').get();
+                        adminLogData = [];
+                        adminLogSnapshot.forEach(doc => {
+                            adminLogData.push(doc.data());
+                        });
+                        
+                        // 관리자 로그 카운터 불러오기
+                        const adminLogCounterDoc = await db.collection('settings').doc('adminLogCounter').get();
+                        if (adminLogCounterDoc.exists) {
+                            adminLogCounter = adminLogCounterDoc.data().value || 1;
+                        } else {
+                            await db.collection('settings').doc('adminLogCounter').set({ value: 1 });
+                        }
+                    } catch (error) {
+                        console.warn('관리자 로그 로드 실패 (권한 문제일 수 있음):', error);
+                    }
                 }
                 
                 // 실시간 리스너 설정
@@ -1083,7 +1092,7 @@
         
         // Firebase에 관리자 로그 추가
         async function addAdminLogToFirebase(logItem) {
-            if (!isFirebaseConnected) return;
+            if (!isFirebaseConnected || !ENABLE_ADMIN_LOG) return;
             
             try {
                 await db.collection('adminLog').doc(logItem.No.toString()).set(logItem);
@@ -1091,12 +1100,14 @@
                 
             } catch (error) {
                 console.error('Firebase 관리자 로그 저장 실패:', error);
-                showStatus('Firebase 관리자 로그 저장 실패: ' + error.message, 'error');
+                console.warn('관리자 로그 기능이 비활성화됩니다.');
             }
         }
         
         // 관리자 활동 로그 기록
         async function logAdminActivity(activityType, target, details) {
+            if (!ENABLE_ADMIN_LOG) return; // 관리자 로그가 비활성화된 경우 건너뛰기
+            
             const logItem = {
                 No: adminLogCounter++,
                 일시: getCurrentDateTime(),
@@ -1108,7 +1119,7 @@
             
             adminLogData.push(logItem);
             
-            // Firebase에 저장
+            // Firebase에 저장 시도
             await addAdminLogToFirebase(logItem);
             
             // localStorage에도 저장
@@ -1184,23 +1195,26 @@
                 console.error('이력 실시간 리스너 오류:', error);
             });
             
-            // 관리자 로그 실시간 감지
-            db.collection('adminLog').onSnapshot((snapshot) => {
-                const newAdminLogData = [];
-                snapshot.forEach(doc => {
-                    newAdminLogData.push(doc.data());
+            // 관리자 로그 실시간 감지 (ENABLE_ADMIN_LOG가 true일 때만)
+            if (ENABLE_ADMIN_LOG) {
+                db.collection('adminLog').onSnapshot((snapshot) => {
+                    const newAdminLogData = [];
+                    snapshot.forEach(doc => {
+                        newAdminLogData.push(doc.data());
+                    });
+                    
+                    newAdminLogData.sort((a, b) => a.No - b.No);
+                    
+                    if (JSON.stringify(newAdminLogData) !== JSON.stringify(adminLogData)) {
+                        adminLogData = newAdminLogData;
+                        renderAdminLogTable();
+                        showStatus('관리자 로그가 다른 기기에서 업데이트되었습니다.', 'success');
+                    }
+                }, (error) => {
+                    console.error('관리자 로그 실시간 리스너 오류:', error);
+                    console.warn('관리자 로그 실시간 동기화가 비활성화됩니다.');
                 });
-                
-                newAdminLogData.sort((a, b) => a.No - b.No);
-                
-                if (JSON.stringify(newAdminLogData) !== JSON.stringify(adminLogData)) {
-                    adminLogData = newAdminLogData;
-                    renderAdminLogTable();
-                    showStatus('관리자 로그가 다른 기기에서 업데이트되었습니다.', 'success');
-                }
-            }, (error) => {
-                console.error('관리자 로그 실시간 리스너 오류:', error);
-            });
+            }
         }
         
         // localStorage에서 데이터 불러오기 (폴백)
