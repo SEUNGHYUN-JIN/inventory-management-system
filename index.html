@@ -554,9 +554,16 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>입고요청서 관리시스템</h1>
-            <p>Inventory Request Management System v4.0 - Firebase Edition</p>
-            <p style="font-size: 12px; opacity: 0.8; margin-top: 5px;">작성일: <span id="current-date"></span></p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1>입고요청서 관리시스템</h1>
+                    <p>Inventory Request Management System v4.1 - Firebase Edition</p>
+                    <p style="font-size: 12px; opacity: 0.8; margin-top: 5px;">작성일: <span id="current-date"></span></p>
+                </div>
+                <div>
+                    <button class="btn btn-danger" onclick="showAdminLogin()" id="adminMenuBtn" style="background-color: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3);">🔐 관리자 모드</button>
+                </div>
+            </div>
         </div>
         
         <!-- Firebase 연결 상태 -->
@@ -601,15 +608,23 @@
         
         <div class="controls">
             <button class="btn btn-primary" onclick="addRequestHistory()">입고 요청 등록</button>
-            <button class="btn btn-primary" onclick="showAddFacilityModal()">생산시설 추가</button>
-            <button class="btn btn-primary" onclick="showAddItemModal()">품목 추가</button>
             <button class="btn btn-info" onclick="printCurrentSheet()">현재 시트 인쇄</button>
             <button class="btn btn-info" onclick="printRequestForm()">입고요청서 인쇄</button>
             <button class="btn btn-info" onclick="previewPrint()">인쇄 미리보기</button>
             <button class="btn btn-success" onclick="exportToExcel()">엑셀로 내보내기</button>
             <button class="btn btn-warning" onclick="syncNow()">수동 동기화</button>
+        </div>
+        
+        <!-- 관리자 메뉴 (로그인 후에만 표시) -->
+        <div id="admin-controls" class="controls" style="display: none; background-color: #f1f3f4; border-top: 2px solid #e74c3c;">
+            <span style="color: #e74c3c; font-weight: bold; margin-right: 10px;">🔐 관리자 모드 활성화</span>
+            <button class="btn btn-primary" onclick="showAddFacilityModal()">생산시설 추가</button>
+            <button class="btn btn-primary" onclick="showAddItemModal()">품목 추가</button>
+            <button class="btn btn-warning" onclick="showManageFacilitiesModal()">생산시설 관리</button>
+            <button class="btn btn-warning" onclick="showManageItemsModal()">품목 관리</button>
             <button class="btn btn-warning" onclick="clearAllData()">데이터 초기화</button>
             <button class="btn btn-danger" onclick="resetToDefault()">기본값 리셋</button>
+            <button class="btn btn-danger" onclick="adminLogout()">로그아웃</button>
         </div>
         
         <div id="status" class="status"></div>
@@ -813,6 +828,140 @@
         </div>
     </div>
 
+    <!-- 관리자 로그인 모달 -->
+    <div id="adminLoginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">관리자 로그인</h3>
+                <span class="close" onclick="closeModal('adminLoginModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="adminId">아이디</label>
+                    <input type="text" id="adminId" placeholder="관리자 아이디를 입력하세요">
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword">패스워드</label>
+                    <input type="password" id="adminPassword" placeholder="관리자 패스워드를 입력하세요">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('adminLoginModal')">취소</button>
+                <button class="btn btn-primary" onclick="adminLogin()">로그인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 생산시설 관리 모달 -->
+    <div id="manageFacilitiesModal" class="modal">
+        <div class="modal-content" style="width: 600px;">
+            <div class="modal-header">
+                <h3 class="modal-title">생산시설 관리</h3>
+                <span class="close" onclick="closeModal('manageFacilitiesModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: #2c3e50; margin-bottom: 10px;">현재 생산시설 목록</h4>
+                    <div id="facilitiesList" style="max-height: 300px; overflow-y: auto; border: 1px solid #e9ecef; border-radius: 4px; padding: 10px;">
+                        <!-- 생산시설 목록이 여기에 표시됩니다 -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('manageFacilitiesModal')">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 품목 관리 모달 -->
+    <div id="manageItemsModal" class="modal">
+        <div class="modal-content" style="width: 800px; max-width: 95%;">
+            <div class="modal-header">
+                <h3 class="modal-title">품목 관리</h3>
+                <span class="close" onclick="closeModal('manageItemsModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 15px;">
+                    <label for="itemsFilterFacility">생산시설 필터:</label>
+                    <select id="itemsFilterFacility" onchange="filterManageItems()">
+                        <option value="">전체 생산시설</option>
+                    </select>
+                </div>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table class="editable-table">
+                        <thead>
+                            <tr>
+                                <th>생산시설</th>
+                                <th>품목명</th>
+                                <th>규격</th>
+                                <th>수량</th>
+                                <th>단위</th>
+                                <th>작업</th>
+                            </tr>
+                        </thead>
+                        <tbody id="manageItemsTableBody">
+                            <!-- 품목 목록이 여기에 표시됩니다 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('manageItemsModal')">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 품목 수정 모달 -->
+    <div id="editItemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">품목 수정</h3>
+                <span class="close" onclick="closeModal('editItemModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editItemIndex">
+                <div class="form-group">
+                    <label for="editItemFacility">생산시설</label>
+                    <select id="editItemFacility">
+                        <option value="">생산시설 선택</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editItemName">품목명</label>
+                    <input type="text" id="editItemName" placeholder="품목명을 입력하세요">
+                </div>
+                <div class="form-group">
+                    <label for="editItemSpec">규격</label>
+                    <input type="text" id="editItemSpec" placeholder="규격을 입력하세요">
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="editItemQuantity">수량</label>
+                            <input type="number" id="editItemQuantity" min="0">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="editItemUnit">단위</label>
+                            <select id="editItemUnit">
+                                <option value="박스">박스</option>
+                                <option value="팩">팩</option>
+                                <option value="개">개</option>
+                                <option value="kg">kg</option>
+                                <option value="L">L</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('editItemModal')">취소</button>
+                <button class="btn btn-primary" onclick="updateItem()">수정</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -878,6 +1027,7 @@
         let currentFacilityFilter = '';
         let lastRegisteredRequest = null;
         let facilitiesData = [];
+        let isAdminLoggedIn = false;
         
         // ========== Firebase 데이터 함수 ==========
         
@@ -1601,11 +1751,19 @@
         // ========== 모달 관리 함수 ==========
         
         function showAddFacilityModal() {
+            if (!isAdminLoggedIn) {
+                showStatus('생산시설 추가는 관리자 로그인이 필요합니다.', 'error');
+                return;
+            }
             document.getElementById('addFacilityModal').style.display = 'block';
             document.getElementById('newFacilityName').focus();
         }
         
         function showAddItemModal() {
+            if (!isAdminLoggedIn) {
+                showStatus('품목 추가는 관리자 로그인이 필요합니다.', 'error');
+                return;
+            }
             updateItemFacilityOptions();
             document.getElementById('addItemModal').style.display = 'block';
         }
@@ -1621,6 +1779,16 @@
                 document.getElementById('itemSpec').value = '';
                 document.getElementById('itemQuantity').value = '0';
                 document.getElementById('itemUnit').value = '박스';
+            } else if (modalId === 'adminLoginModal') {
+                document.getElementById('adminId').value = '';
+                document.getElementById('adminPassword').value = '';
+            } else if (modalId === 'editItemModal') {
+                document.getElementById('editItemIndex').value = '';
+                document.getElementById('editItemFacility').value = '';
+                document.getElementById('editItemName').value = '';
+                document.getElementById('editItemSpec').value = '';
+                document.getElementById('editItemQuantity').value = '';
+                document.getElementById('editItemUnit').value = '박스';
             }
         }
         
@@ -1632,6 +1800,335 @@
                     modal.style.display = 'none';
                 }
             });
+        }
+        
+        // ========== 관리자 로그인 함수 ==========
+        
+        function showAdminLogin() {
+            if (isAdminLoggedIn) {
+                showStatus('이미 관리자로 로그인되어 있습니다.', 'success');
+                return;
+            }
+            document.getElementById('adminLoginModal').style.display = 'block';
+            document.getElementById('adminId').focus();
+        }
+        
+        function adminLogin() {
+            const adminId = document.getElementById('adminId').value.trim();
+            const adminPassword = document.getElementById('adminPassword').value.trim();
+            
+            if (!adminId || !adminPassword) {
+                showStatus('아이디와 패스워드를 모두 입력해주세요.', 'error');
+                return;
+            }
+            
+            if (adminId === 'admin' && adminPassword === 'admin') {
+                isAdminLoggedIn = true;
+                document.getElementById('admin-controls').style.display = 'flex';
+                document.getElementById('adminMenuBtn').textContent = '🔓 관리자 모드 활성화됨';
+                document.getElementById('adminMenuBtn').disabled = true;
+                document.getElementById('adminMenuBtn').style.backgroundColor = 'rgba(40, 167, 69, 0.3)';
+                document.getElementById('adminMenuBtn').style.borderColor = 'rgba(40, 167, 69, 0.5)';
+                closeModal('adminLoginModal');
+                showStatus('✅ 관리자로 로그인되었습니다. 관리 기능이 활성화되었습니다.', 'success');
+            } else {
+                showStatus('아이디 또는 패스워드가 올바르지 않습니다.', 'error');
+                document.getElementById('adminPassword').value = '';
+            }
+        }
+        
+        function adminLogout() {
+            if (confirm('관리자 모드에서 로그아웃하시겠습니까?')) {
+                isAdminLoggedIn = false;
+                document.getElementById('admin-controls').style.display = 'none';
+                document.getElementById('adminMenuBtn').textContent = '🔐 관리자 모드';
+                document.getElementById('adminMenuBtn').disabled = false;
+                document.getElementById('adminMenuBtn').style.backgroundColor = 'rgba(255,255,255,0.2)';
+                document.getElementById('adminMenuBtn').style.borderColor = 'rgba(255,255,255,0.3)';
+                showStatus('관리자 모드에서 로그아웃되었습니다.', 'success');
+            }
+        }
+        
+        // ========== 관리자 생산시설 관리 함수 ==========
+        
+        function showManageFacilitiesModal() {
+            if (!isAdminLoggedIn) {
+                showStatus('관리자 로그인이 필요합니다.', 'error');
+                return;
+            }
+            renderFacilitiesList();
+            document.getElementById('manageFacilitiesModal').style.display = 'block';
+        }
+        
+        function renderFacilitiesList() {
+            const facilitiesList = document.getElementById('facilitiesList');
+            facilitiesList.innerHTML = '';
+            
+            if (facilitiesData.length === 0) {
+                facilitiesList.innerHTML = '<p style="text-align: center; color: #666;">등록된 생산시설이 없습니다.</p>';
+                return;
+            }
+            
+            facilitiesData.forEach((facility, index) => {
+                const facilityDiv = document.createElement('div');
+                facilityDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border: 1px solid #e9ecef; border-radius: 4px; margin-bottom: 8px; background-color: #f8f9fa;';
+                
+                const itemCount = inventoryData.filter(item => item.생산시설 === facility).length;
+                const canDelete = itemCount === 0;
+                
+                facilityDiv.innerHTML = `
+                    <div>
+                        <strong>${facility}</strong>
+                        <small style="color: #666; margin-left: 10px;">(품목 ${itemCount}개)</small>
+                    </div>
+                    <div>
+                        <button class="btn btn-warning" onclick="editFacility(${index})" style="padding: 4px 8px; font-size: 11px; margin-right: 5px;">수정</button>
+                        <button class="btn btn-danger" onclick="deleteFacility(${index})" 
+                                ${canDelete ? '' : 'disabled title="품목이 있는 생산시설은 삭제할 수 없습니다."'} 
+                                style="padding: 4px 8px; font-size: 11px;">삭제</button>
+                    </div>
+                `;
+                facilitiesList.appendChild(facilityDiv);
+            });
+        }
+        
+        async function editFacility(index) {
+            const facility = facilitiesData[index];
+            const newName = prompt(`생산시설명을 수정하세요:`, facility);
+            
+            if (newName === null) return;
+            if (!newName.trim()) {
+                showStatus('생산시설명을 입력해주세요.', 'error');
+                return;
+            }
+            
+            const trimmedName = newName.trim();
+            if (trimmedName === facility) return;
+            
+            if (facilitiesData.includes(trimmedName)) {
+                showStatus('이미 존재하는 생산시설명입니다.', 'error');
+                return;
+            }
+            
+            // 기존 품목들의 생산시설명도 함께 변경
+            inventoryData.forEach(item => {
+                if (item.생산시설 === facility) {
+                    item.생산시설 = trimmedName;
+                }
+            });
+            
+            // 이력 데이터의 생산시설명도 변경
+            historyData.forEach(item => {
+                if (item.생산시설 === facility) {
+                    item.생산시설 = trimmedName;
+                }
+            });
+            
+            facilitiesData[index] = trimmedName;
+            
+            // Firebase에 저장
+            await saveFacilitiesToFirebase();
+            await saveInventoryToFirebase();
+            
+            // 모든 이력 데이터 업데이트
+            if (isFirebaseConnected) {
+                const batch = db.batch();
+                historyData.forEach(item => {
+                    const docRef = db.collection('history').doc(item.No.toString());
+                    batch.set(docRef, item);
+                });
+                await batch.commit();
+            }
+            
+            // localStorage에도 저장
+            localStorage.setItem('facilitiesData', JSON.stringify(facilitiesData));
+            localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+            localStorage.setItem('requestHistory', JSON.stringify(historyData));
+            
+            updateFacilityOptions();
+            renderFacilitiesList();
+            renderAllTables();
+            
+            showStatus(`✅ 생산시설 "${facility}"이(가) "${trimmedName}"(으)로 수정되었습니다.`, 'success');
+        }
+        
+        async function deleteFacility(index) {
+            const facility = facilitiesData[index];
+            const itemCount = inventoryData.filter(item => item.생산시설 === facility).length;
+            
+            if (itemCount > 0) {
+                showStatus(`${facility}에 ${itemCount}개의 품목이 있어 삭제할 수 없습니다. 먼저 관련 품목을 삭제해주세요.`, 'error');
+                return;
+            }
+            
+            if (confirm(`생산시설 "${facility}"을(를) 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.`)) {
+                facilitiesData.splice(index, 1);
+                
+                // Firebase에 저장
+                await saveFacilitiesToFirebase();
+                
+                // localStorage에도 저장
+                localStorage.setItem('facilitiesData', JSON.stringify(facilitiesData));
+                
+                updateFacilityOptions();
+                renderFacilitiesList();
+                
+                showStatus(`✅ 생산시설 "${facility}"이(가) 삭제되었습니다.`, 'success');
+            }
+        }
+        
+        // ========== 관리자 품목 관리 함수 ==========
+        
+        function showManageItemsModal() {
+            if (!isAdminLoggedIn) {
+                showStatus('관리자 로그인이 필요합니다.', 'error');
+                return;
+            }
+            updateManageItemsFacilityOptions();
+            renderManageItemsTable();
+            document.getElementById('manageItemsModal').style.display = 'block';
+        }
+        
+        function updateManageItemsFacilityOptions() {
+            const filterSelect = document.getElementById('itemsFilterFacility');
+            filterSelect.innerHTML = '<option value="">전체 생산시설</option>';
+            
+            facilitiesData.forEach(facility => {
+                const option = document.createElement('option');
+                option.value = facility;
+                option.textContent = facility;
+                filterSelect.appendChild(option);
+            });
+        }
+        
+        function filterManageItems() {
+            renderManageItemsTable();
+        }
+        
+        function renderManageItemsTable() {
+            const tbody = document.getElementById('manageItemsTableBody');
+            const filterFacility = document.getElementById('itemsFilterFacility').value;
+            tbody.innerHTML = '';
+            
+            let filteredData = inventoryData;
+            if (filterFacility) {
+                filteredData = inventoryData.filter(item => item.생산시설 === filterFacility);
+            }
+            
+            if (filteredData.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="6" style="text-align: center; color: #666;">품목이 없습니다.</td>';
+                tbody.appendChild(row);
+                return;
+            }
+            
+            filteredData.forEach((item, index) => {
+                const globalIndex = inventoryData.indexOf(item);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.생산시설}</td>
+                    <td>${item.품목}</td>
+                    <td>${item.규격}</td>
+                    <td>${item.수량}</td>
+                    <td>${item.단위}</td>
+                    <td>
+                        <button class="btn btn-warning" onclick="showEditItemModal(${globalIndex})" 
+                                style="padding: 4px 8px; font-size: 10px; margin-right: 4px;">수정</button>
+                        <button class="btn btn-danger" onclick="deleteItem(${globalIndex})" 
+                                style="padding: 4px 8px; font-size: 10px;">삭제</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function showEditItemModal(index) {
+            const item = inventoryData[index];
+            document.getElementById('editItemIndex').value = index;
+            
+            // 생산시설 옵션 업데이트
+            const facilitySelect = document.getElementById('editItemFacility');
+            facilitySelect.innerHTML = '<option value="">생산시설 선택</option>';
+            facilitiesData.forEach(facility => {
+                const option = document.createElement('option');
+                option.value = facility;
+                option.textContent = facility;
+                if (facility === item.생산시설) option.selected = true;
+                facilitySelect.appendChild(option);
+            });
+            
+            document.getElementById('editItemName').value = item.품목;
+            document.getElementById('editItemSpec').value = item.규격;
+            document.getElementById('editItemQuantity').value = item.수량;
+            document.getElementById('editItemUnit').value = item.단위;
+            
+            document.getElementById('editItemModal').style.display = 'block';
+        }
+        
+        async function updateItem() {
+            const index = parseInt(document.getElementById('editItemIndex').value);
+            const facility = document.getElementById('editItemFacility').value;
+            const name = document.getElementById('editItemName').value.trim();
+            const spec = document.getElementById('editItemSpec').value.trim();
+            const quantity = parseInt(document.getElementById('editItemQuantity').value) || 0;
+            const unit = document.getElementById('editItemUnit').value;
+            
+            if (!facility || !name || !spec) {
+                showStatus('모든 필수 항목을 입력해주세요.', 'error');
+                return;
+            }
+            
+            const originalItem = inventoryData[index];
+            
+            // 중복 검사 (자기 자신 제외)
+            const duplicateItem = inventoryData.find((item, i) => 
+                i !== index &&
+                item.생산시설 === facility && 
+                item.품목 === name && 
+                item.규격 === spec
+            );
+            
+            if (duplicateItem) {
+                showStatus('동일한 생산시설에 같은 품목과 규격이 이미 존재합니다.', 'error');
+                return;
+            }
+            
+            // 품목 정보 업데이트
+            inventoryData[index] = {
+                품목: name,
+                규격: spec,
+                수량: quantity,
+                단위: unit,
+                생산시설: facility
+            };
+            
+            // Firebase에 저장
+            await saveInventoryToFirebase();
+            localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+            
+            renderManageItemsTable();
+            renderAllTables();
+            closeModal('editItemModal');
+            
+            showStatus(`✅ 품목 "${originalItem.품목}"이(가) 수정되었습니다.`, 'success');
+        }
+        
+        async function deleteItem(index) {
+            const item = inventoryData[index];
+            
+            if (confirm(`품목 "${item.품목}"을(를) 삭제하시겠습니까?\n\n생산시설: ${item.생산시설}\n규격: ${item.규격}\n현재수량: ${item.수량}${item.단위}\n\n이 작업은 되돌릴 수 없습니다.`)) {
+                
+                inventoryData.splice(index, 1);
+                
+                // Firebase에 저장
+                await saveInventoryToFirebase();
+                localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+                
+                renderManageItemsTable();
+                renderAllTables();
+                
+                showStatus(`✅ 품목 "${item.품목}"이(가) 삭제되었습니다.`, 'success');
+            }
         }
         
         // ========== 생산시설 관리 함수 ==========
@@ -1757,6 +2254,10 @@
         }
         
         async function resetToDefault() {
+            if (!isAdminLoggedIn) {
+                showStatus('데이터 리셋은 관리자 로그인이 필요합니다.', 'error');
+                return;
+            }
             if (confirm('⚠️ 보관품 데이터 리셋\n\n보관품 수량을 기본값으로 되돌립니다.\n(입고이력과 생산시설은 유지됩니다)\n\n계속하시겠습니까?')) {
                 
                 inventoryData = getDefaultInventoryData();
@@ -1775,6 +2276,10 @@
         }
         
         async function clearAllData() {
+            if (!isAdminLoggedIn) {
+                showStatus('데이터 초기화는 관리자 로그인이 필요합니다.', 'error');
+                return;
+            }
             if (confirm('⚠️ 모든 데이터 초기화\n\n다음 작업이 수행됩니다:\n• 모든 입고 이력 삭제\n• 보관품 수량을 기본값으로 리셋\n• 생산시설을 기본값으로 리셋\n• 저장된 모든 데이터 삭제\n\n계속하시겠습니까?')) {
                 
                 historyData = [];
