@@ -1110,37 +1110,50 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
+    <!-- GitHub Pages: firebase-config.pages.js 사용. 로컬: firebase-config.js가 있으면 덮어씀 (.gitignore 대상) -->
+    <script src="firebase-config.pages.js"></script>
+    <script src="firebase-config.js"></script>
     <script>
       // ========== Firebase 설정 ==========
-      const firebaseConfig = {
-        apiKey: "AIzaSyDYxnj8yec_fyxggZ4TJ1H2MtcBrrZVYMQ",
-        authDomain: "inventory-management-212d7.firebaseapp.com",
-        projectId: "inventory-management-212d7",
-        storageBucket: "inventory-management-212d7.firebasestorage.app",
-        messagingSenderId: "808033831667",
-        appId: "1:808033831667:web:e5633736dcb054703c4586",
-      };
+      if (
+        typeof firebaseConfig === "undefined" ||
+        !firebaseConfig.apiKey ||
+        firebaseConfig.apiKey.indexOf("YOUR_") === 0
+      ) {
+        window.firebaseConfig = { _placeholder: true };
+      }
+      const firebaseConfig = window.firebaseConfig || { _placeholder: true };
 
       // Firebase 초기화
       let db;
       let isFirebaseConnected = false;
 
       try {
-        firebase.initializeApp(firebaseConfig);
-        db = firebase.firestore();
+        if (firebaseConfig._placeholder) {
+          setFirebaseStatus(
+            "error",
+            "firebase-config.js를 설정해주세요. (firebase-config.sample.js 참고)"
+          );
+          loadDataFromLocalStorage();
+        } else {
+          firebase.initializeApp(firebaseConfig);
+          db = firebase.firestore();
 
-        // Firestore 연결 테스트
-        db.enableNetwork()
-          .then(() => {
-            setFirebaseStatus("connected", "Firebase 연결됨 (실시간 동기화)");
-            isFirebaseConnected = true;
-            loadDataFromFirebase();
-          })
-          .catch((error) => {
-            setFirebaseStatus("error", "Firebase 연결 실패: " + error.message);
-            loadDataFromLocalStorage();
-          });
+          // Firestore 연결 테스트
+          db.enableNetwork()
+            .then(() => {
+              setFirebaseStatus("connected", "Firebase 연결됨 (실시간 동기화)");
+              isFirebaseConnected = true;
+              loadDataFromFirebase();
+            })
+            .catch((error) => {
+              setFirebaseStatus(
+                "error",
+                "Firebase 연결 실패: " + error.message
+              );
+              loadDataFromLocalStorage();
+            });
+        }
       } catch (error) {
         console.error("Firebase 초기화 실패:", error);
         setFirebaseStatus("error", "Firebase 연결 실패 (localStorage 모드)");

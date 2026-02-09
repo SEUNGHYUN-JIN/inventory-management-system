@@ -1,0 +1,24 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 인벤토리 컬렉션 - 읽기/쓰기 허용
+    match /inventory/{document} {
+      allow read, write: if true;
+    }
+    
+    // 히스토리 컬렉션 - 읽기/쓰기 허용
+    match /history/{document} {
+      allow read, write: if true;
+    }
+    
+    // 설정 컬렉션 - 읽기/쓰기 허용
+    match /settings/{document} {
+      allow read, write: if true;
+    }
+    
+    // 기본 규칙 - 다른 모든 컬렉션은 거부
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

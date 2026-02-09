@@ -1,0 +1,30 @@
+# Firebase / API 키 (실제 설정 파일 - 커밋 금지)
+firebase-config.js
+**/firebase-config.js
+config.js
+**/config.js
+.env
+.env.*
+!.env.sample
+*.local.js
+secrets/
+**/secrets/
+
+# Firebase 로컬 캐시
+.firebase/
+.firebaserc
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE / 에디터
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 로그/임시
+*.log
+.cache/
