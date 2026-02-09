@@ -141,6 +141,23 @@ npx http-server -p 8000
 if (adminId === 'your-admin-id' && adminPassword === 'your-secure-password') {
 ```
 
+### GitHub Pages에서 Firebase 연결이 안 될 때
+
+**증상:** 사이트는 뜨는데 "Firebase 연결 실패" 또는 로컬 저장소 모드만 동작함.
+
+**원인:** Google Cloud에서 API 키에 **HTTP referrer 제한**이 걸려 있으면, GitHub Pages 도메인(`*.github.io`)에서 요청이 막힙니다.
+
+**해결:**
+
+1. [Google Cloud Console](https://console.cloud.google.com/) 접속 → 프로젝트 **inventory-management-212d7** 선택
+2. **APIs & Services** → **Credentials** → **API keys** 이동
+3. 웹 앱에 쓰는 API 키(예: 브라우저 키) 클릭
+4. **Application restrictions** → **HTTP referrers (websites)** 선택
+5. **Website restrictions**에 아래 한 줄 이상 추가 후 저장:
+   - `https://seunghyun-jin.github.io/inventory-management-system/*`
+   - 또는 전체 허용: `https://*.github.io/*`
+6. 저장 후 1–2분 지나서 GitHub Pages 사이트 새로고침 (강력 새로고침: Ctrl+Shift+R 또는 Cmd+Shift+R)
+
 ### Firebase 프로젝트 연동
 
 자체 Firebase 프로젝트를 사용하려면:
@@ -148,7 +165,7 @@ if (adminId === 'your-admin-id' && adminPassword === 'your-secure-password') {
 1. [Firebase Console](https://console.firebase.google.com/) 접속
 2. 새 프로젝트 생성
 3. Firestore Database 활성화
-4. `public/index.html`의 Firebase 설정 정보 교체:
+4. `firebase-config.pages.js`(및 로컬용 `firebase-config.js`)의 Firebase 설정 정보 교체:
 
 ```javascript
 const firebaseConfig = {
