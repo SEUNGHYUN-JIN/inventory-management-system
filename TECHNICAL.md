@@ -1,15 +1,16 @@
-# 입고요청서 관리시스템 v4.0 기술문서
+# 입고요청서 관리시스템 v4.1 기술문서
 
 ## 📚 목차
 1. [시스템 아키텍처](#시스템-아키텍처)
-2. [데이터베이스 설계](#데이터베이스-설계)
-3. [Firebase 연동](#firebase-연동)
-4. [핵심 기능 구현](#핵심-기능-구현)
-5. [UI/UX 설계](#uiux-설계)
-6. [성능 최적화](#성능-최적화)
-7. [보안 및 데이터 무결성](#보안-및-데이터-무결성)
-8. [배포 및 운영](#배포-및-운영)
-9. [개발자 가이드](#개발자-가이드)
+2. [보안 시스템](#보안-시스템)
+3. [데이터베이스 설계](#데이터베이스-설계)
+4. [Firebase 연동](#firebase-연동)
+5. [핵심 기능 구현](#핵심-기능-구현)
+6. [UI/UX 설계](#uiux-설계)
+7. [성능 최적화](#성능-최적화)
+8. [보안 및 데이터 무결성](#보안-및-데이터-무결성)
+9. [배포 및 운영](#배포-및-운영)
+10. [개발자 가이드](#개발자-가이드)
 
 ## 🏗️ 시스템 아키텍처
 
@@ -19,11 +20,14 @@
 │     사용자 인터페이스     │
 │   (HTML + CSS + JS)     │
 ├─────────────────────────┤
+│    🔐 관리자 인증 레이어  │
+│   (Session Management)  │
+├─────────────────────────┤
 │     애플리케이션 로직     │
 │  (Vanilla JavaScript)   │
 ├─────────────────────────┤
 │     Firebase SDK        │
-│  (Firestore + Auth)     │
+│  (Firestore + Hosting)  │
 ├─────────────────────────┤
 │     Firebase Cloud      │
 │    (NoSQL Database)     │
@@ -44,6 +48,177 @@
 #### 3. 통신 레이어
 - **Firebase SDK**: 실시간 양방향 통신
 - **RESTful API**: Firebase REST API 기반
+
+#### 4. 보안 레이어
+- **세션 기반 인증**: 클라이언트 사이드 세션 관리
+- **권한 제어**: 관리자 전용 기능 분리
+- **데이터 보호**: 민감한 작업 접근 제한
+
+## 🔐 보안 시스템
+
+### 관리자 인증 구조
+
+#### 1. 로그인 프로세스
+```javascript
+function adminLogin() {
+    const adminId = document.getElementById('adminId').value.trim();
+    const adminPassword = document.getElementById('adminPassword').value.trim();
+    
+    // 입력값 검증
+    if (!adminId || !adminPassword) {
+        showStatus('아이디와 패스워드를 모두 입력해주세요.', 'error');
+        return;
+    }
+    
+    // 하드코딩된 자격증명 검증 (프로덕션에서는 변경 필요)
+    if (adminId === 'admin' && adminPassword === 'admin') {
+        // 세션 상태 설정
+        isAdminLoggedIn = true;
+        
+        // UI 상태 변경
+        document.getElementById('admin-controls').style.display = 'flex';
+        document.getElementById('adminMenuBtn').textContent = '🔓 관리자 모드 활성화됨';
+        document.getElementById('adminMenuBtn').disabled = true;
+        
+        closeModal('adminLoginModal');
+        showStatus('✅ 관리자로 로그인되었습니다. 관리 기능이 활성화되었습니다.', 'success');
+    } else {
+        showStatus('아이디 또는 패스워드가 올바르지 않습니다.', 'error');
+        document.getElementById('adminPassword').value = '';
+    }
+}
+```
+
+#### 2. 권한 검증 시스템
+```javascript
+// 생산시설 추가 권한 검증
+function showAddFacilityModal() {
+    if (!isAdminLoggedIn) {
+        showStatus('생산시설 추가는 관리자 로그인이 필요합니다.', 'error');
+        return;
+    }
+    document.getElementById('addFacilityModal').style.display = 'block';
+}
+
+// 데이터 초기화 권한 검증
+async function clearAllData() {
+    if (!isAdminLoggedIn) {
+        showStatus('데이터 초기화는 관리자 로그인이 필요합니다.', 'error');
+        return;
+    }
+    // ... 초기화 로직
+}
+```
+
+#### 3. 세션 관리
+```javascript
+let isAdminLoggedIn = false; // 전역 세션 상태
+
+function adminLogout() {
+    if (confirm('관리자 모드에서 로그아웃하시겠습니까?')) {
+        // 세션 초기화
+        isAdminLoggedIn = false;
+        
+        // UI 상태 복원
+        document.getElementById('admin-controls').style.display = 'none';
+        document.getElementById('adminMenuBtn').textContent = '🔐 관리자 모드';
+        document.getElementById('adminMenuBtn').disabled = false;
+        
+        showStatus('관리자 모드에서 로그아웃되었습니다.', 'success');
+    }
+}
+```
+
+### 보안 고려사항
+
+#### 1. 프로덕션 환경 보안 강화
+```javascript
+// 프로덕션 환경에서 권장되는 개선사항
+class AdminAuth {
+    constructor() {
+        this.sessionTimeout = 30 * 60 * 1000; // 30분 세션 타임아웃
+        this.maxAttempts = 3; // 최대 로그인 시도 횟수
+        this.loginAttempts = 0;
+        this.lastAttemptTime = null;
+    }
+    
+    // 보안 강화된 로그인
+    login(id, password) {
+        // 브루트 포스 공격 방지
+        if (this.loginAttempts >= this.maxAttempts) {
+            const timeSinceLastAttempt = Date.now() - this.lastAttemptTime;
+            if (timeSinceLastAttempt < 5 * 60 * 1000) { // 5분 잠금
+                throw new Error('너무 많은 로그인 시도로 인해 계정이 일시적으로 잠겼습니다.');
+            } else {
+                this.loginAttempts = 0; // 잠금 해제
+            }
+        }
+        
+        // 패스워드 해싱 (실제 환경에서 구현)
+        const hashedPassword = this.hashPassword(password);
+        const storedHash = this.getStoredPasswordHash(id);
+        
+        if (hashedPassword === storedHash) {
+            this.loginAttempts = 0;
+            this.setSession();
+            return true;
+        } else {
+            this.loginAttempts++;
+            this.lastAttemptTime = Date.now();
+            return false;
+        }
+    }
+    
+    // 세션 설정
+    setSession() {
+        const sessionData = {
+            isLoggedIn: true,
+            loginTime: Date.now(),
+            expiryTime: Date.now() + this.sessionTimeout
+        };
+        
+        // 세션 데이터 암호화 저장
+        sessionStorage.setItem('adminSession', 
+            btoa(JSON.stringify(sessionData))
+        );
+    }
+    
+    // 세션 검증
+    validateSession() {
+        const sessionData = sessionStorage.getItem('adminSession');
+        if (!sessionData) return false;
+        
+        try {
+            const session = JSON.parse(atob(sessionData));
+            return session.expiryTime > Date.now();
+        } catch {
+            return false;
+        }
+    }
+}
+```
+
+#### 2. Firebase 보안 강화
+```javascript
+// Firestore 보안 규칙 (firestore.rules)
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // IP 기반 접근 제한 (선택사항)
+    match /inventory/{document} {
+      allow read, write: if request.auth != null 
+        || resource.data.allowedIPs.hasAny([request.remote_ip]);
+    }
+    
+    // 시간 기반 접근 제한 (업무시간만 허용)
+    match /settings/{document} {
+      allow write: if request.auth != null
+        && request.time.hours() >= 9 
+        && request.time.hours() <= 18;
+    }
+  }
+}
+```
 
 ## 🗄️ 데이터베이스 설계
 
@@ -640,14 +815,85 @@ class ErrorHandler {
 
 ## 🚀 배포 및 운영
 
-### GitHub Pages 배포
+### Firebase Hosting 배포 (권장)
+
+#### 1. 초기 설정
+```bash
+# Firebase CLI 설치
+npm install -g firebase-tools
+
+# Firebase 로그인
+firebase login
+
+# 프로젝트 디렉토리에서 초기화
+firebase init hosting
+
+# 설정 선택:
+# - Use existing project 선택
+# - Public directory: public
+# - Single-page app: No
+# - GitHub integration: Optional
+```
+
+#### 2. 배포 스크립트
+```bash
+#!/bin/bash
+
+# Firebase 배포 스크립트
+echo "🚀 Firebase 배포를 시작합니다..."
+
+# public 디렉토리에 최신 파일 복사
+cp index.html public/
+
+# Firebase에 배포
+firebase deploy --only hosting
+
+echo "✅ Firebase 배포가 완료되었습니다!"
+echo "🌐 사이트 URL: https://your-project.web.app"
+```
+
+#### 3. 자동화된 배포 (GitHub Actions)
+```yaml
+# .github/workflows/firebase-deploy.yml
+name: Firebase Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+        
+    - name: Install dependencies
+      run: npm install -g firebase-tools
+      
+    - name: Copy files to public
+      run: cp index.html public/
+      
+    - name: Deploy to Firebase
+      run: firebase deploy --only hosting
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+```
+
+### GitHub Pages 배포 (대안)
 
 #### 자동화된 배포 스크립트
 ```bash
 #!/bin/bash
 
 # 빌드 및 배포 스크립트
-echo "🚀 배포를 시작합니다..."
+echo "🚀 GitHub Pages 배포를 시작합니다..."
 
 # Git 상태 확인
 git status
@@ -661,6 +907,44 @@ git push origin main
 
 echo "✅ 배포가 완료되었습니다!"
 echo "🌐 사이트 URL: https://your-username.github.io/inventory-management/"
+```
+
+### 보안 설정
+
+#### Firebase Hosting 보안 헤더
+```json
+// firebase.json의 headers 설정
+{
+  "hosting": {
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "X-Frame-Options",
+            "value": "DENY"
+          },
+          {
+            "key": "X-Content-Type-Options", 
+            "value": "nosniff"
+          },
+          {
+            "key": "X-XSS-Protection",
+            "value": "1; mode=block"
+          },
+          {
+            "key": "Strict-Transport-Security",
+            "value": "max-age=31536000; includeSubDomains"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          }
+        ]
+      }
+    ]
+  }
+}
 ```
 
 ### 모니터링 및 로깅
@@ -1011,6 +1295,72 @@ class PerformanceBenchmark {
 
 ---
 
-**📝 문서 마지막 업데이트**: 2024년 1월
-**🔖 문서 버전**: v4.0
+## 📊 v4.1 업데이트 요약
+
+### 새로운 아키텍처 요소
+
+#### 1. 관리자 인증 시스템
+- 클라이언트 사이드 세션 관리
+- 권한 기반 기능 제어
+- 로그인/로그아웃 생명주기 관리
+
+#### 2. 생산시설/품목 관리 시스템
+- CRUD (Create, Read, Update, Delete) 완전 지원
+- 데이터 무결성 검증
+- 연관 데이터 자동 업데이트
+
+#### 3. Firebase Hosting 통합
+- 보안 헤더 자동 설정
+- HTTPS 강제 적용
+- CDN 기반 글로벌 배포
+
+### 보안 강화사항
+
+#### 1. 접근 제어
+```javascript
+// 기능별 권한 검증 매트릭스
+const PERMISSION_MATRIX = {
+    'facility.create': 'admin',
+    'facility.update': 'admin', 
+    'facility.delete': 'admin',
+    'item.create': 'admin',
+    'item.update': 'admin',
+    'item.delete': 'admin',
+    'data.reset': 'admin',
+    'data.clear': 'admin'
+};
+
+function hasPermission(action) {
+    const requiredRole = PERMISSION_MATRIX[action];
+    return requiredRole === 'admin' ? isAdminLoggedIn : true;
+}
+```
+
+#### 2. 데이터 보호
+- 민감한 작업 실행 전 이중 확인
+- 연관 데이터 자동 백업
+- 실수 방지를 위한 UI 제한
+
+#### 3. 감사 로깅
+```javascript
+// 관리자 작업 로깅
+function logAdminAction(action, details) {
+    const logEntry = {
+        timestamp: new Date().toISOString(),
+        action,
+        details,
+        session: getSessionId(),
+        ip: getClientIP()
+    };
+    
+    // Firebase에 감사 로그 저장
+    db.collection('auditLogs').add(logEntry);
+}
+```
+
+---
+
+**📝 문서 마지막 업데이트**: 2024년 12월
+**🔖 문서 버전**: v4.1
 **👥 작성자**: 개발팀
+**🔐 보안 등급**: Enhanced
